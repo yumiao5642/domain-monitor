@@ -235,20 +235,11 @@ main {
 /* 查询表单 */
 .form-label {
     text-align: center; /* 居中显示 */
+    color: #ffffff; /* 深色模式默认白色 */
 }
 
-.form-control {
-    background: #2d3748;
-    border: 1px solid #63b3ed;
-    color: #e2e8f0;
-    border-radius: 8px;
-    transition: border-color 0.3s ease;
-}
-
-.form-control:focus {
-    background: #2d3748;
-    border-color: #4299e1;
-    color: #e2e8f0;
+body.light-theme .form-label {
+    color: #1a202c !important; /* 浅色模式为深灰 */
 }
 
 /* Flatpickr 时间控件样式 */
@@ -350,6 +341,18 @@ main {
 }
 
 /* 表单和模态框 */
+.form-control {
+    background: #2d3748;
+    border: 1px solid #63b3ed;
+    color: #e2e8f0;
+}
+
+.form-control:focus {
+    background: #2d3748;
+    border-color: #4299e1;
+    color: #e2e8f0;
+}
+
 .modal-content {
     background: #4a5568;
     border: none;
@@ -492,7 +495,7 @@ body.light-theme .text-white {
 }
 
 .dark:text-gray-800 {
-    color: #ffffff; /* 深色模式默认白色 */
+    color: #ffffff !important; /* 深色模式默认白色 */
 }
 
 body.light-theme .dark:text-gray-800 {
