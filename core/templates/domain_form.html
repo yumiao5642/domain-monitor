@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}{% if domain %}编辑域名{% else %}添加域名{% endif %} - 域名监控系统{% endblock %}
+{% block nav_title %}{% if domain %}编辑域名{% else %}添加域名{% endif %}{% endblock %}
 {% block content %}
 <div class="mb-4">
     <h2 class="text-2xl font-bold page-title"><i class="fas fa-globe mr-2"></i>{% if domain %}编辑域名{% else %}添加域名{% endif %}</h2>
