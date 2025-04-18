@@ -235,7 +235,7 @@ main {
 /* 查询表单 */
 .form-label {
     text-align: center; /* 居中显示 */
-    color: #ffffff; /* 深色模式默认白色 */
+    color: #ffffff !important; /* 深色模式默认白色 */
 }
 
 body.light-theme .form-label {
