@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 域名监控系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'css/domain_monitor_custom.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <h2 class="text-center mb-4 text-2xl font-bold text-gray-100">登录</h2>
+            {% if error %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ error }}
+                <button type="button" class="close" data-dismiss="alert">×</button>
+            </div>
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username" class="text-gray-100"><i class="fas fa-user mr-2"></i>用户名</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password" class="text-gray-100"><i class="fas fa-lock mr-2"></i>密码</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="mfa_code" class="text-gray-100"><i class="fas fa-shield-alt mr-2"></i>MFA验证码（若未启用可留空）</label>
+                    <input type="text" class="form-control" id="mfa_code" name="mfa_code">
+                </div>
+                <button type="submit" class="btn btn-primary w-100">登录</button>
+            </form>
+            <p class="text-center mt-3 text-gray-400">没有账号？请联系管理员</p>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/domain_monitor_custom.js' %}"></script>
+</body>
+</html>

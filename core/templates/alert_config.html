@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}告警配置 - 域名监控系统{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-2xl font-bold page-title"><i class="fas fa-bell mr-2"></i>告警配置</h2>
+</div>
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="telegram_token" class="text-white dark:text-gray-800"><i class="fab fa-telegram mr-2"></i>Telegram Bot Token</label>
+                <input type="text" class="form-control rounded-lg" id="telegram_token" name="telegram_token" value="{{ config.telegram_token|default:'' }}">
+            </div>
+            <div class="form-group">
+                <label for="telegram_chat_id" class="text-white dark:text-gray-800"><i class="fas fa-comments mr-2"></i>Telegram Chat ID</label>
+                <input type="text" class="form-control rounded-lg" id="telegram_chat_id" name="telegram_chat_id" value="{{ config.telegram_chat_id|default:'' }}">
+            </div>
+            <div class="form-check mb-3">
+                <input type="checkbox" class="form-check-input" id="enabled" name="enabled" {% if config.enabled|default:True %}checked{% endif %}>
+                <label class="form-check-label text-white dark:text-gray-800" for="enabled"><i class="fas fa-toggle-on mr-2"></i>启用告警</label>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-2"></i>保存</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

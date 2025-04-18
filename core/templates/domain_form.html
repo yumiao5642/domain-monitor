@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{% if domain %}编辑域名{% else %}添加域名{% endif %} - 域名监控系统{% endblock %}
+{% block content %}
+<div class="mb-4">
+    <h2 class="text-2xl font-bold page-title"><i class="fas fa-globe mr-2"></i>{% if domain %}编辑域名{% else %}添加域名{% endif %}</h2>
+</div>
+<div class="card">
+    <div class="card-body">
+        {% if error %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ error }}
+            <button type="button" class="close" data-dismiss="alert">×</button>
+        </div>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <!-- 基本信息 -->
+            <h5 class="text-white dark:text-gray-800 mb-3">基本信息</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="domain_name" class="text-white dark:text-gray-800"><i class="fas fa-globe mr-2"></i>域名</label>
+                    <input type="text" class="form-control rounded-lg" id="domain_name" name="domain_name" value="{{ domain.domain_name|default:'' }}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="task_name" class="text-white dark:text-gray-800"><i class="fas fa-tasks mr-2"></i>任务名称</label>
+                    <input type="text" class="form-control rounded-lg" id="task_name" name="task_name" value="{{ domain.task_name|default:'' }}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="group" class="text-white dark:text-gray-800"><i class="fas fa-folder mr-2"></i>分组</label>
+                    <input type="text" class="form-control rounded-lg" id="group" name="group" value="{{ domain.group|default:'' }}">
+                </div>
+            </div>
+            <!-- 监控设置 -->
+            <h5 class="text-white dark:text-gray-800 mb-3 mt-4">监控设置</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="check_interval" class="text-white dark:text-gray-800"><i class="fas fa-clock mr-2"></i>检测频率（秒）</label>
+                    <input type="number" class="form-control rounded-lg" id="check_interval" name="check_interval" value="{{ domain.check_interval|default:'3600' }}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="template" class="text-white dark:text-gray-800"><i class="fas fa-list mr-2"></i>监控模板</label>
+                    <select class="form-control rounded-lg" id="template" name="template">
+                        <option value="">选择模板</option>
+                        {% for template in templates %}
+                        <option value="{{ template.name }}" {% if template.name == domain.template %}selected{% endif %}>{{ template.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="check_domain" name="check_domain" {% if domain.check_domain|default:True %}checked{% endif %}>
+                        <label class="form-check-label text-white dark:text-gray-800" for="check_domain"><i class="fas fa-server mr-2"></i>监控域名到期</label>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="check_cert" name="check_cert" {% if domain.check_cert|default:True %}checked{% endif %}>
+                        <label class="form-check-label text-white dark:text-gray-800" for="check_cert"><i class="fas fa-certificate mr-2"></i>监控证书到期</label>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="check_https" name="check_https" {% if domain.check_https|default:True %}checked{% endif %}>
+                        <label class="form-check-label text-white dark:text-gray-800" for="check_https"><i class="fas fa-globe-asia mr-2"></i>监控网站状态</label>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3"><i class="fas fa-save mr-2"></i>保存</button>
+        </form>
+    </div>
+</div>
+<script>
+$(document).ready(function() {
+    $('#template').change(function() {
+        var selected = $(this).val();
+        if (selected === '标准监控') {
+            $('#check_interval').val(3600);
+            $('#check_domain').prop('checked', true);
+            $('#check_cert').prop('checked', true);
+            $('#check_https').prop('checked', true);
+        } else if (selected === '高频监控') {
+            $('#check_interval').val(300);
+            $('#check_domain').prop('checked', true);
+            $('#check_cert').prop('checked', false);
+            $('#check_https').prop('checked', true);
+        } else if (selected === '低频监控') {
+            $('#check_interval').val(86400);
+            $('#check_domain').prop('checked', true);
+            $('#check_cert').prop('checked', true);
+            $('#check_https').prop('checked', false);
+        }
+    });
+});
+</script>
+{% endblock %}

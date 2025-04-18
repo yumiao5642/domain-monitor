@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}域名管理 - 域名监控系统{% endblock %}
+{% block nav_title %}域名管理{% endblock %}
+{% block content %}
+<div class="mb-4">
+    <h2 class="text-2xl font-bold page-title"><i class="fas fa-globe mr-2"></i>域名管理</h2>
+    <!-- 查询表单 -->
+    <form method="get" class="mt-4 d-flex justify-content-center">
+        <div class="d-flex flex-wrap align-items-end">
+            <div class="mr-2 mb-2" style="width: 150px;">
+                <label for="name" class="form-label text-white dark:text-gray-800">名称</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ name }}">
+            </div>
+            <div class="mr-2 mb-2" style="width: 150px;">
+                <label for="domain_name" class="form-label text-white dark:text-gray-800">域名</label>
+                <input type="text" class="form-control" id="domain_name" name="domain_name" value="{{ domain_name }}">
+            </div>
+            <div class="mr-2 mb-2" style="width: 150px;">
+                <label for="group" class="form-label text-white dark:text-gray-800">分组</label>
+                <input type="text" class="form-control" id="group" name="group" value="{{ group }}">
+            </div>
+            <div class="mr-2 mb-2 text-center">
+                <label class="form-label text-white dark:text-gray-800">创建时间</label>
+                <div class="d-flex align-items-center">
+                    <input type="text" class="form-control" id="time_range" name="time_range" placeholder="选择时间范围" style="width: 200px;">
+                </div>
+            </div>
+            <div class="mb-2">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-search mr-2"></i>查询</button>
+                <a href="{% url 'domain_form' %}" class="btn btn-primary ml-2"><i class="fas fa-plus mr-2"></i>添加域名</a>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="card">
+    <div class="card-body">
+        <table class="table table-hover text-center">
+            <thead>
+                <tr>
+                    <th>名称</th>
+                    <th>域名</th>
+                    <th>分组</th>
+                    <th>频率</th>
+                    <th>域名到期</th>
+                    <th>证书到期</th>
+                    <th>网站监控</th>
+                    <th>可用率</th>
+                    <th>创建时间</th>
+                    <th>检测时间</th>
+                    <th>响应速度</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in domain_data %}
+                {% with domain=data.domain %}
+                <tr>
+                    <td>{{ domain.task_name }}</td>
+                    <td>
+                        <a href="http://{{ domain.domain_name }}" target="_blank">{{ domain.domain_name }}</a>
+                        <button class="btn btn-sm btn-outline-secondary ml-1 copy-btn" data-clipboard-text="{{ domain.domain_name }}"><i class="fas fa-copy"></i></button>
+                    </td>
+                    <td>{{ domain.group|default:'无' }}</td>
+                    <td>{{ data.formatted_interval }}</td>
+                    <td>
+                        <span class="mr-1 {% if domain.check_domain %}text-success{% else %}text-secondary{% endif %}">
+                            {% if domain.check_domain %}开启中{% else %}已关闭{% endif %}
+                        </span>
+                        <a href="{% url 'toggle_monitor' domain.id 'domain' %}" class="btn btn-sm {% if domain.check_domain %}btn-secondary{% else %}btn-success{% endif %}">
+                            {% if domain.check_domain %}关{% else %}开{% endif %}
+                        </a>
+                    </td>
+                    <td>
+                        <span class="mr-1 {% if domain.check_cert %}text-success{% else %}text-secondary{% endif %}">
+                            {% if domain.check_cert %}开启中{% else %}已关闭{% endif %}
+                        </span>
+                        <a href="{% url 'toggle_monitor' domain.id 'cert' %}" class="btn btn-sm {% if domain.check_cert %}btn-secondary{% else %}btn-success{% endif %}">
+                            {% if domain.check_cert %}关{% else %}开{% endif %}
+                        </a>
+                    </td>
+                    <td>
+                        <span class="mr-1 {% if domain.check_https %}text-success{% else %}text-secondary{% endif %}">
+                            {% if domain.check_https %}开启中{% else %}已关闭{% endif %}
+                        </span>
+                        <a href="{% url 'toggle_monitor' domain.id 'https' %}" class="btn btn-sm {% if domain.check_https %}btn-secondary{% else %}btn-success{% endif %}">
+                            {% if domain.check_https %}关{% else %}开{% endif %}
+                        </a>
+                    </td>
+                    <td>{{ data.availability }}%</td>
+                    <td>{{ domain.create_time|date:"Y-m-d H:i:s" }}</td>
+                    <td>{{ data.last_check_time|date:"Y-m-d H:i:s"|default:'无' }}</td>
+                    <td>{{ data.last_response_time|default:'无' }}秒</td>
+                    <td class="d-flex justify-content-around">
+                        <a href="{% url 'toggle_all_monitors' domain.id 'on' %}" class="btn btn-sm btn-success">开</a>
+                        <a href="{% url 'toggle_all_monitors' domain.id 'off' %}" class="btn btn-sm btn-secondary">关</a>
+                        <a href="{% url 'domain_form' domain.id %}" class="btn btn-sm btn-info"><i class="fas fa-edit"></i> 编辑</a>
+                        <a href="{% url 'delete_domain' domain.id %}" class="btn btn-sm btn-danger" onclick="return confirm('确定删除此域名？');"><i class="fas fa-trash"></i> 删除</a>
+                    </td>
+                </tr>
+                {% endwith %}
+                {% empty %}
+                <tr>
+                    <td colspan="12" class="text-center text-gray-600">暂无域名数据</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/zh.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js"></script>
+{% endblock %}
