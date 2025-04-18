@@ -36,6 +36,14 @@ class Domain(models.Model):
     expire_date = models.DateTimeField(null=True, blank=True, verbose_name='到期时间')
     group = models.CharField(max_length=100, blank=True, verbose_name='分组')
     labels = models.CharField(max_length=255, blank=True, verbose_name='标签')
+    response_time_threshold = models.IntegerField(default=1000, verbose_name='响应时间阈值（毫秒）')
+    check_unreachable = models.BooleanField(default=True, verbose_name='监控URL无法访问')
+    alert_threshold = models.IntegerField(default=3, verbose_name='异常连续次数')
+    notify_telegram = models.BooleanField(default=False, verbose_name='Telegram通知')
+    notify_email = models.BooleanField(default=False, verbose_name='邮箱通知')
+    notify_inbox = models.BooleanField(default=False, verbose_name='站内信通知')
+    long_term_monitor = models.BooleanField(default=True, verbose_name='长期监控')
+    end_time = models.DateField(null=True, blank=True, verbose_name='任务结束时间')
 
     class Meta:
         db_table = 'domain'

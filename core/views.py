@@ -59,7 +59,6 @@ def domain_list(request):
     name = request.GET.get('name', '')
     domain_name = request.GET.get('domain_name', '')
     group = request.GET.get('group', '')
-    time_range = request.GET.get('time_range', '')
 
     if name:
         domains = domains.filter(task_name__icontains=name)
@@ -67,16 +66,6 @@ def domain_list(request):
         domains = domains.filter(domain_name__icontains=domain_name)
     if group:
         domains = domains.filter(group=group)
-    if time_range:
-        try:
-            start_time, end_time = time_range.split(' - ')
-            start_dt = datetime.strptime(start_time, '%Y-%m-%d')
-            end_dt = datetime.strptime(end_time, '%Y-%m-%d')
-            start_dt = pytz.timezone('Asia/Shanghai').localize(start_dt)
-            end_dt = pytz.timezone('Asia/Shanghai').localize(end_dt.replace(hour=23, minute=59, second=59))
-            domains = domains.filter(create_time__range=(start_dt, end_dt))
-        except ValueError:
-            pass
 
     # 计算可用率、最新检测数据和格式化频率
     domain_data = []
@@ -107,7 +96,6 @@ def domain_list(request):
         'name': name,
         'domain_name': domain_name,
         'group': group,
-        'time_range': time_range,
     })
 
 # 添加/编辑域名视图
@@ -125,8 +113,18 @@ def domain_form(request, domain_id=None):
             check_domain = 'check_domain' in request.POST
             check_cert = 'check_cert' in request.POST
             check_https = 'check_https' in request.POST
-            group = request.POST.get('group', '')
+            group = request.POST.get('group', '默认组')
             template = request.POST.get('template', '')
+            response_time_threshold = int(request.POST.get('response_time_threshold', 1000))
+            check_unreachable = 'check_unreachable' in request.POST
+            alert_threshold = int(request.POST.get('alert_threshold', 3))
+            notify_telegram = 'notify_telegram' in request.POST
+            notify_email = 'notify_email' in request.POST
+            notify_inbox = 'notify_inbox' in request.POST
+            long_term_monitor = 'long_term_monitor' in request.POST
+            end_time = request.POST.get('end_time') or None
+            if end_time:
+                end_time = datetime.strptime(end_time, '%Y-%m-%d').date()
             if domain:
                 domain.domain_name = domain_name
                 domain.task_name = task_name
@@ -135,6 +133,14 @@ def domain_form(request, domain_id=None):
                 domain.check_cert = check_cert
                 domain.check_https = check_https
                 domain.group = group
+                domain.response_time_threshold = response_time_threshold
+                domain.check_unreachable = check_unreachable
+                domain.alert_threshold = alert_threshold
+                domain.notify_telegram = notify_telegram
+                domain.notify_email = notify_email
+                domain.notify_inbox = notify_inbox
+                domain.long_term_monitor = long_term_monitor
+                domain.end_time = end_time
                 domain.save()
             else:
                 Domain.objects.create(
@@ -146,6 +152,14 @@ def domain_form(request, domain_id=None):
                     check_cert=check_cert,
                     check_https=check_https,
                     group=group,
+                    response_time_threshold=response_time_threshold,
+                    check_unreachable=check_unreachable,
+                    alert_threshold=alert_threshold,
+                    notify_telegram=notify_telegram,
+                    notify_email=notify_email,
+                    notify_inbox=notify_inbox,
+                    long_term_monitor=long_term_monitor,
+                    end_time=end_time,
                     next_check=timezone.now()
                 )
             return redirect('domain_list')
@@ -157,7 +171,8 @@ def domain_form(request, domain_id=None):
         {'name': '高频监控', 'interval': 300, 'check_domain': True, 'check_cert': False, 'check_https': True},
         {'name': '低频监控', 'interval': 86400, 'check_domain': True, 'check_cert': True, 'check_https': False},
     ]
-    return render(request, 'domain_form.html', {'domain': domain, 'templates': templates})
+    groups = Domain.objects.values_list('group', flat=True).distinct().exclude(group='')
+    return render(request, 'domain_form.html', {'domain': domain, 'templates': templates, 'groups': groups})
 
 # 告警配置视图
 @login_required
@@ -184,7 +199,7 @@ def mfa_setup(request):
     if request.method == 'POST':
         mfa_code = request.POST.get('mfa_code')
         if request.user.mfa_secret:
-            totp = pyotp.TOTP(request.user.mfa_secret)
+            totp = pyotp.TOTP(user.mfa_secret)
             if totp.verify(mfa_code):
                 request.user.mfa_enabled = True
                 request.user.save()

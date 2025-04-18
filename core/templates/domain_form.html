@@ -14,65 +14,137 @@
             <button type="button" class="close" data-dismiss="alert">×</button>
         </div>
         {% endif %}
-        <form method="post">
+        <form method="post" id="domain_form">
             {% csrf_token %}
-            <!-- 基本信息 -->
-	    <h5 class="dark:text-gray-800 mb-3">基本信息</h5>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-		    <label for="domain_name" class="dark:text-gray-800"><i class="fas fa-globe mr-2"></i>域名</label>
-                    <input type="text" class="form-control rounded-lg" id="domain_name" name="domain_name" value="{{ domain.domain_name|default:'' }}" required>
+            <!-- 任务名称 -->
+            <div class="form-group row mb-3">
+                <label for="task_name" class="col-sm-3 col-form-label dark:text-gray-800"><i class="fas fa-tasks mr-2"></i>任务名称</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="task_name" name="task_name" value="{{ domain.task_name|default:'' }}" required>
                 </div>
-                <div class="col-md-6 mb-3">
-		    <label for="task_name" class="dark:text-gray-800"><i class="fas fa-tasks mr-2"></i>任务名称</label>
-                    <input type="text" class="form-control rounded-lg" id="task_name" name="task_name" value="{{ domain.task_name|default:'' }}" required>
+            </div>
+            <!-- 域名 -->
+            <div class="form-group row mb-3">
+                <label for="domain_name" class="col-sm-3 col-form-label dark:text-gray-800"><i class="fas fa-globe mr-2"></i>域名</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="domain_name" name="domain_name" value="{{ domain.domain_name|default:'' }}" required>
                 </div>
-                <div class="col-md-6 mb-3">
-		    <label for="group" class="dark:text-gray-800"><i class="fas fa-folder mr-2"></i>分组</label>
-                    <input type="text" class="form-control rounded-lg" id="group" name="group" value="{{ domain.group|default:'' }}">
+            </div>
+            <!-- 分组 -->
+            <div class="form-group row mb-3">
+                <label for="group" class="col-sm-3 col-form-label dark:text-gray-800"><i class="fas fa-folder mr-2"></i>分组</label>
+                <div class="col-sm-6">
+                    <select class="form-control" id="group" name="group">
+                        <option value="默认组" {% if domain.group == '默认组' %}selected{% endif %}>默认组</option>
+                        {% for group_name in groups %}
+                        <option value="{{ group_name }}" {% if group_name == domain.group %}selected{% endif %}>{{ group_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <button type="button" class="btn btn-primary" id="create_group_btn"><i class="fas fa-plus mr-2"></i>新建</button>
                 </div>
             </div>
             <!-- 监控设置 -->
-	    <h5 class="dark:text-gray-800 mb-3 mt-4">监控设置</h5>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-		    <label for="check_interval" class="dark:text-gray-800"><i class="fas fa-clock mr-2"></i>检测频率（秒）</label>
-                    <input type="number" class="form-control rounded-lg" id="check_interval" name="check_interval" value="{{ domain.check_interval|default:'3600' }}" required>
+            <h5 class="dark:text-gray-800 mb-3 mt-4">监控设置</h5>
+            <div class="form-group row mb-3">
+                <label for="check_interval" class="col-sm-3 col-form-label dark:text-gray-800"><i class="fas fa-clock mr-2"></i>检测频率（秒）</label>
+                <div class="col-sm-9">
+                    <input type="number" class="form-control" id="check_interval" name="check_interval" value="{{ domain.check_interval|default:'3600' }}" required>
                 </div>
-                <div class="col-md-6 mb-3">
-		    <label for="template" class="dark:text-gray-800"><i class="fas fa-list mr-2"></i>监控模板</label>
-                    <select class="form-control rounded-lg" id="template" name="template">
+            </div>
+            <div class="form-group row mb-3">
+                <label for="template" class="col-sm-3 col-form-label dark:text-gray-800"><i class="fas fa-list mr-2"></i>监控模板</label>
+                <div class="col-sm-9">
+                    <select class="form-control" id="template" name="template">
                         <option value="">选择模板</option>
                         {% for template in templates %}
                         <option value="{{ template.name }}" {% if template.name == domain.template %}selected{% endif %}>{{ template.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-md-4 mb-3">
+            </div>
+            <div class="form-group row mb-3">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-9">
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" id="check_domain" name="check_domain" {% if domain.check_domain|default:True %}checked{% endif %}>
-			<label class="form-check-label dark:text-gray-800" for="check_domain"><i class="fas fa-server mr-2"></i>监控域名到期</label>
+                        <label class="form-check-label dark:text-gray-800" for="check_domain"><i class="fas fa-server mr-2"></i>监控域名到期</label>
                     </div>
-                </div>
-                <div class="col-md-4 mb-3">
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" id="check_cert" name="check_cert" {% if domain.check_cert|default:True %}checked{% endif %}>
-			<label class="form-check-label dark:text-gray-800" for="check_cert"><i class="fas fa-certificate mr-2"></i>监控证书到期</label>
+                        <label class="form-check-label dark:text-gray-800" for="check_cert"><i class="fas fa-certificate mr-2"></i>监控证书到期</label>
                     </div>
-                </div>
-                <div class="col-md-4 mb-3">
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" id="check_https" name="check_https" {% if domain.check_https|default:True %}checked{% endif %}>
-			<label class="form-check-label dark:text-gray-800" for="check_https"><i class="fas fa-globe-asia mr-2"></i>监控网站状态</label>
+                        <label class="form-check-label dark:text-gray-800" for="check_https"><i class="fas fa-globe-asia mr-2"></i>监控网站状态</label>
                     </div>
+                </div>
+            </div>
+            <!-- 异常条件 -->
+            <h5 class="dark:text-gray-800 mb-3 mt-4">异常条件</h5>
+            <div class="form-group row mb-3">
+                <label for="response_time_threshold" class="col-sm-3 col-form-label dark:text-gray-800"><i class="fas fa-hourglass-half mr-2"></i>响应时间阈值（毫秒）</label>
+                <div class="col-sm-9">
+                    <input type="number" class="form-control" id="response_time_threshold" name="response_time_threshold" value="{{ domain.response_time_threshold|default:'1000' }}">
+                </div>
+            </div>
+            <div class="form-group row mb-3">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-9">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="check_unreachable" name="check_unreachable" {% if domain.check_unreachable|default:True %}checked{% endif %}>
+                        <label class="form-check-label dark:text-gray-800" for="check_unreachable"><i class="fas fa-times-circle mr-2"></i>URL无法访问</label>
+                    </div>
+                </div>
+            </div>
+            <!-- 告警条件 -->
+            <h5 class="dark:text-gray-800 mb-3 mt-4">告警条件</h5>
+            <div class="form-group row mb-3">
+                <label for="alert_threshold" class="col-sm-3 col-form-label dark:text-gray-800"><i class="fas fa-bell mr-2"></i>异常连续次数</label>
+                <div class="col-sm-9">
+                    <input type="number" class="form-control" id="alert_threshold" name="alert_threshold" value="{{ domain.alert_threshold|default:'3' }}">
+                </div>
+            </div>
+            <!-- 通知方式 -->
+            <h5 class="dark:text-gray-800 mb-3 mt-4">通知方式</h5>
+            <div class="form-group row mb-3">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-9">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="notify_telegram" name="notify_telegram" {% if domain.notify_telegram|default:False %}checked{% endif %}>
+                        <label class="form-check-label dark:text-gray-800" for="notify_telegram"><i class="fab fa-telegram mr-2"></i>Telegram</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="notify_email" name="notify_email" {% if domain.notify_email|default:False %}checked{% endif %}>
+                        <label class="form-check-label dark:text-gray-800" for="notify_email"><i class="fas fa-envelope mr-2"></i>邮箱</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="notify_inbox" name="notify_inbox" {% if domain.notify_inbox|default:False %}checked{% endif %}>
+                        <label class="form-check-label dark:text-gray-800" for="notify_inbox"><i class="fas fa-inbox mr-2"></i>站内信</label>
+                    </div>
+                </div>
+            </div>
+            <!-- 长期监控 -->
+            <h5 class="dark:text-gray-800 mb-3 mt-4">长期监控</h5>
+            <div class="form-group row mb-3">
+                <label for="long_term_monitor" class="col-sm-3 col-form-label dark:text-gray-800"><i class="fas fa-toggle-on mr-2"></i>长期监控</label>
+                <div class="col-sm-9">
+                    <input type="checkbox" class="form-check-input" id="long_term_monitor" name="long_term_monitor" {% if domain.long_term_monitor|default:True %}checked{% endif %}>
+                    <input type="text" class="form-control mt-2" id="end_time" name="end_time" placeholder="选择任务结束时间" style="display: {% if domain.long_term_monitor|default:True %}none{% else %}block{% endif %};" value="{{ domain.end_time|date:'Y-m-d'|default:'' }}">
                 </div>
             </div>
             <button type="submit" class="btn btn-primary mt-3"><i class="fas fa-save mr-2"></i>保存</button>
         </form>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/zh.js"></script>
 <script>
 $(document).ready(function() {
+    // 监控模板选择
     $('#template').change(function() {
         var selected = $(this).val();
         if (selected === '标准监控') {
@@ -91,6 +163,31 @@ $(document).ready(function() {
             $('#check_cert').prop('checked', true);
             $('#check_https').prop('checked', false);
         }
+    });
+
+    // 新建分组
+    $('#create_group_btn').click(function() {
+        var group_name = prompt('请输入新分组名称：');
+        if (group_name && group_name.trim() !== '') {
+            var $group_select = $('#group');
+            $group_select.append(new Option(group_name.trim(), group_name.trim(), true, true));
+            alert('分组 ' + group_name.trim() + ' 创建成功！');
+        }
+    });
+
+    // 长期监控开关
+    $('#long_term_monitor').change(function() {
+        if ($(this).is(':checked')) {
+            $('#end_time').hide();
+        } else {
+            $('#end_time').show();
+        }
+    });
+
+    // 初始化结束时间 Flatpickr
+    $("#end_time").flatpickr({
+        dateFormat: "Y-m-d",
+        locale: "zh"
     });
 });
 </script>
