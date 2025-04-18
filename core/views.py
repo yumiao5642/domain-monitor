@@ -114,7 +114,7 @@ def domain_form(request, domain_id=None):
             check_cert = 'check_cert' in request.POST
             check_https = 'check_https' in request.POST
             group = request.POST.get('group', '默认组')
-            template = request.POST.get('template', '')
+            #template = request.POST.get('template', '')
             response_time_threshold = int(request.POST.get('response_time_threshold', 1000))
             check_unreachable = 'check_unreachable' in request.POST
             alert_threshold = int(request.POST.get('alert_threshold', 3))
@@ -166,11 +166,11 @@ def domain_form(request, domain_id=None):
         except IntegrityError:
             return render(request, 'domain_form.html', {'error': '域名已存在', 'domain': domain})
     # 模拟监控模板
-    templates = [
-        {'name': '标准监控', 'interval': 3600, 'check_domain': True, 'check_cert': True, 'check_https': True},
-        {'name': '高频监控', 'interval': 300, 'check_domain': True, 'check_cert': False, 'check_https': True},
-        {'name': '低频监控', 'interval': 86400, 'check_domain': True, 'check_cert': True, 'check_https': False},
-    ]
+    #templates = [
+    #    {'name': '标准监控', 'interval': 3600, 'check_domain': True, 'check_cert': True, 'check_https': True},
+    #    {'name': '高频监控', 'interval': 300, 'check_domain': True, 'check_cert': False, 'check_https': True},
+    #    {'name': '低频监控', 'interval': 86400, 'check_domain': True, 'check_cert': True, 'check_https': False},
+    #]
     groups = Domain.objects.values_list('group', flat=True).distinct().exclude(group='')
     return render(request, 'domain_form.html', {'domain': domain, 'templates': templates, 'groups': groups})
 

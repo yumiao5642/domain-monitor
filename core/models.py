@@ -37,7 +37,7 @@ class Domain(models.Model):
     group = models.CharField(max_length=100, blank=True, verbose_name='分组')
     labels = models.CharField(max_length=255, blank=True, verbose_name='标签')
     response_time_threshold = models.IntegerField(default=1000, verbose_name='响应时间阈值（毫秒）')
-    check_unreachable = models.BooleanField(default=True, verbose_name='监控URL无法访问')
+    #check_unreachable = models.BooleanField(default=True, verbose_name='监控URL无法访问')
     alert_threshold = models.IntegerField(default=3, verbose_name='异常连续次数')
     notify_telegram = models.BooleanField(default=False, verbose_name='Telegram通知')
     notify_email = models.BooleanField(default=False, verbose_name='邮箱通知')
