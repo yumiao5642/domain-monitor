@@ -248,6 +248,7 @@ body.light-theme .form-label {
     color: #e2e8f0;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    z-index: 1000; /* 确保日历在前景 */
 }
 
 .flatpickr-day.selected,
@@ -487,17 +488,17 @@ body.light-theme .page-title {
 
 /* 动态文字颜色 */
 .text-white {
-    color: #ffffff !important;
+    color: #ffffff;
 }
 
 body.light-theme .text-white {
-    color: #ffffff !important;
+    color: #1a202c;
 }
 
 .dark:text-gray-800 {
-    color: #ffffff !important; /* 深色模式默认白色 */
+    color: #ffffff; /* 深色模式默认白色 */
 }
 
 body.light-theme .dark:text-gray-800 {
-    color: #1a202c !important; /* 浅色模式为深灰 */
+    color: #1a202c; /* 浅色模式为深灰 */
 }

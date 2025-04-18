@@ -9,19 +9,19 @@
     <form method="get" class="mt-4 d-flex justify-content-center">
         <div class="d-flex flex-wrap align-items-end">
             <div class="mr-2 mb-2" style="width: 150px;">
-                <label for="name" class="form-label text-white dark:text-gray-800">名称</label>
+		<label for="name" class="form-label dark:text-gray-800">名称</label>
                 <input type="text" class="form-control" id="name" name="name" value="{{ name }}">
             </div>
             <div class="mr-2 mb-2" style="width: 150px;">
-                <label for="domain_name" class="form-label text-white dark:text-gray-800">域名</label>
+		<label for="domain_name" class="form-label dark:text-gray-800">域名</label>
                 <input type="text" class="form-control" id="domain_name" name="domain_name" value="{{ domain_name }}">
             </div>
             <div class="mr-2 mb-2" style="width: 150px;">
-                <label for="group" class="form-label text-white dark:text-gray-800">分组</label>
+		<label for="group" class="form-label dark:text-gray-800">分组</label>
                 <input type="text" class="form-control" id="group" name="group" value="{{ group }}">
             </div>
             <div class="mr-2 mb-2 text-center">
-                <label for="time_range" class="form-label text-white dark:text-gray-800">创建时间</label>
+		<label for="time_range" class="form-label dark:text-gray-800">创建时间</label>
                 <input type="text" class="form-control" id="time_range" name="time_range" placeholder="选择时间范围" style="width: 200px;" value="{{ time_range }}">
             </div>
             <div class="mb-2">
@@ -106,67 +106,9 @@
         </table>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/zh.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/zh.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js"></script>
-<script>
-$(document).ready(function() {
-    // 初始化 Flatpickr 时间范围选择器
-    $("#time_range").flatpickr({
-        mode: "range",
-        dateFormat: "Y-m-d",
-        locale: "zh",
-        plugins: [
-            new flatpickr.plugins.shortcutButtons({
-                buttons: [
-                    {
-                        label: "今日",
-                        setDate: function() {
-                            const today = new Date();
-                            return [today, today];
-                        }
-                    },
-                    {
-                        label: "昨日",
-                        setDate: function() {
-                            const yesterday = new Date();
-                            yesterday.setDate(yesterday.getDate() - 1);
-                            return [yesterday, yesterday];
-                        }
-                    },
-                    {
-                        label: "最近7日",
-                        setDate: function() {
-                            const today = new Date();
-                            const lastWeek = new Date();
-                            lastWeek.setDate(today.getDate() - 6);
-                            return [lastWeek, today];
-                        }
-                    },
-                    {
-                        label: "最近一个月",
-                        setDate: function() {
-                            const today = new Date();
-                            const lastMonth = new Date();
-                            lastMonth.setMonth(today.getMonth() - 1);
-                            return [lastMonth, today];
-                        }
-                    }
-                ]
-            })
-        ]
-    });
-
-    // 初始化 Clipboard.js
-    var clipboard = new ClipboardJS('.copy-btn');
-    clipboard.on('success', function(e) {
-        alert('域名已复制！');
-        e.clearSelection();
-    });
-    clipboard.on('error', function(e) {
-        alert('复制失败，请手动复制！');
-    });
-});
-</script>
 {% endblock %}

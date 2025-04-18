@@ -51,6 +51,60 @@ $(document).ready(function() {
         $('#theme-toggle i').removeClass('fa-moon').addClass('fa-sun');
     }
 
+	$("#time_range").flatpickr({
+    mode: "range",
+    dateFormat: "Y-m-d",
+    locale: "zh",
+    plugins: [
+        new flatpickr.plugins.shortcutButtons({
+            buttons: [
+                {
+                    label: "今日",
+                    setDate: function() {
+                        const today = new Date();
+                        return [today, today];
+                    }
+                },
+                {
+                    label: "昨日",
+                    setDate: function() {
+                        const yesterday = new Date();
+                        yesterday.setDate(yesterday.getDate() - 1);
+                        return [yesterday, yesterday];
+                    }
+                },
+                {
+                    label: "最近7日",
+                    setDate: function() {
+                        const today = new Date();
+                        const lastWeek = new Date();
+                        lastWeek.setDate(today.getDate() - 6);
+                        return [lastWeek, today];
+                    }
+                },
+                {
+                    label: "最近一个月",
+                    setDate: function() {
+                        const today = new Date();
+                        const lastMonth = new Date();
+                        lastMonth.setMonth(today.getMonth() - 1);
+                        return [lastMonth, today];
+                    }
+                }
+            ]
+        })
+    ]
+});
+
+	// 初始化 Clipboard.js
+var clipboard = new ClipboardJS('.copy-btn');
+clipboard.on('success', function(e) {
+    alert('域名已复制！');
+    e.clearSelection();
+});
+clipboard.on('error', function(e) {
+    alert('复制失败，请手动复制！');
+});
     // 初始化 Flatpickr 时间范围选择器
     $("#time_range").flatpickr({
         mode: "range",
