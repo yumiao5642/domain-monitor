@@ -6,7 +6,7 @@
 <div class="mb-2">
     <h2 class="text-base font-bold page-title"><i class="fas fa-globe mr-1"></i>域名管理</h2>
     <!-- 查询表单 -->
-    <form method="get" class="mt-1 d-flex justify-content-center">
+    <form method="get" class="mt-1 d-flex justify-content-start">
         <div class="d-flex flex-nowrap align-items-center">
             <div class="mr-1" style="width: 90px;">
                 <label for="name" class="form-label dark:text-gray-800 text-sm">名称</label>
@@ -22,7 +22,7 @@
             </div>
             <div class="d-flex align-items-end">
                 <button type="submit" class="btn btn-primary mr-1"><i class="fas fa-search mr-1"></i>查询</button>
-                <a href="{% url 'domain_form' %}" class="btn btn-primary"><i class="fas fa-plus mr-1"></i>添加域名</a>
+                <a href="{% url 'domain_form' %}" class="btn btn-primary"><i class="fas fa-plus mr-1"></i>添加</a>
             </div>
         </div>
     </form>
@@ -52,8 +52,9 @@
                 <tr>
                     <td class="truncate-name">{{ domain.task_name }}</td>
                     <td class="truncate-domain">
-                        <a href="http://{{ domain.domain_name }}" target="_blank">{{ domain.domain_name }}</a>
+                        <a href="https://{{ domain.domain_name }}" target="_blank">{{ domain.domain_name }}</a>
                         <button class="btn btn-sm btn-outline-secondary ml-1 copy-btn" data-clipboard-text="{{ domain.domain_name }}"><i class="fas fa-copy"></i></button>
+                        <span class="copy-tooltip">已复制</span>
                     </td>
                     <td>{{ domain.group|default:'无' }}</td>
                     <td>{{ data.formatted_interval }}</td>
@@ -109,11 +110,19 @@ $(document).ready(function() {
     // 初始化 Clipboard.js
     var clipboard = new ClipboardJS('.copy-btn');
     clipboard.on('success', function(e) {
-        alert('域名已复制！');
+        var $tooltip = $(e.trigger).siblings('.copy-tooltip');
+        $tooltip.fadeIn(300).css('display', 'inline-block');
+        setTimeout(function() {
+            $tooltip.fadeOut(300);
+        }, 3000);
         e.clearSelection();
     });
     clipboard.on('error', function(e) {
-        alert('复制失败，请手动复制！');
+        var $tooltip = $(e.trigger).siblings('.copy-tooltip');
+        $tooltip.text('复制失败').fadeIn(300).css('display', 'inline-block');
+        setTimeout(function() {
+            $tooltip.fadeOut(300);
+        }, 3000);
     });
 
     // 动态截断名称和域名

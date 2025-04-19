@@ -20,6 +20,7 @@ body {
     width: 100%;
     z-index: 1000;
     border-radius: 0 0 8px 8px;
+    height: 56px; /* 导航栏高度 */
 }
 
 .navbar-brand {
@@ -140,8 +141,9 @@ body {
 
 /* 内容区域 */
 main {
-    margin-left: 150px; /* 与侧边栏宽度一致 */
+    margin-left: 206px; /* 左侧菜单 150px + 空隙 56px */
     margin-top: 70px;
+    margin-right: 56px; /* 与导航栏高度一致 */
     padding: 15px; /* 减少内边距 */
     background-color: #2d3748; /* 深色内容背景 */
     border-radius: 8px;
@@ -188,7 +190,7 @@ main {
     color: #e2e8f0; /* 表格文字稍浅 */
     vertical-align: middle;
     text-align: center; /* 居中显示 */
-    font-size: 0.85rem; /* 再次缩小字体（原 0.9rem，减小约 1 个字号） */
+    font-size: 0.85rem; /* 字体大小 */
     padding: 0.3rem; /* 调整内边距 */
     white-space: nowrap; /* 防止换行 */
 }
@@ -199,39 +201,39 @@ main {
 }
 
 .table th:nth-child(1), .table td:nth-child(1) { /* 名称 */
-    max-width: 180px; /* 增加宽度 */
+    max-width: 140px; /* 减少宽度 */
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .table th:nth-child(2), .table td:nth-child(2) { /* 域名 */
-    max-width: 180px; /* 增加宽度 */
+    max-width: 140px; /* 减少宽度 */
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .table th:nth-child(3), .table td:nth-child(3) { /* 分组 */
-    width: 70px;
+    width: 80px; /* 增加宽度 */
 }
 
 .table th:nth-child(4), .table td:nth-child(4) { /* 频率 */
-    width: 70px;
+    width: 80px; /* 增加宽度 */
 }
 
 .table th:nth-child(5), .table td:nth-child(5) { /* 域名到期 */
-    width: 100px;
+    width: 110px; /* 增加宽度 */
 }
 
 .table th:nth-child(6), .table td:nth-child(6) { /* 证书到期 */
-    width: 100px;
+    width: 110px; /* 增加宽度 */
 }
 
 .table th:nth-child(7), .table td:nth-child(7) { /* 网站监控 */
-    width: 100px;
+    width: 110px; /* 增加宽度 */
 }
 
 .table th:nth-child(8), .table td:nth-child(8) { /* 可用率 */
-    width: 70px;
+    width: 80px; /* 增加宽度 */
 }
 
 .table th:nth-child(9), .table td:nth-child(9) { /* 创建时间 */
@@ -243,22 +245,35 @@ main {
 }
 
 .table th:nth-child(11), .table td:nth-child(11) { /* 响应速度 */
-    width: 90px;
+    width: 100px; /* 增加宽度 */
 }
 
 .table th:nth-child(12), .table td:nth-child(12) { /* 操作 */
-    width: 160px;
+    width: 180px; /* 增加宽度 */
 }
 
 .table .btn-sm {
-    margin: 0 3px; /* 缩小操作按钮间距 */
-    padding: 0.15rem 0.3rem; /* 进一步缩小按钮 */
-    font-size: 0.75rem; /* 按钮字体 */
+    margin: 0 2px; /* 缩小间距 */
+    padding: 0.1rem 0.2rem; /* 缩小按钮 */
+    font-size: 0.7rem; /* 缩小字体 */
 }
 
 .table-hover tbody tr:hover {
     background: #63b3ed;
     color: #1a202c;
+}
+
+/* 复制按钮提示泡泡 */
+.copy-tooltip {
+    display: none;
+    position: absolute;
+    background: #63b3ed;
+    color: #1a202c;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    margin-left: 5px;
+    z-index: 1000;
 }
 
 /* 按钮 */
@@ -284,6 +299,15 @@ main {
 
 body.light-theme .form-label {
     color: #1a202c !important; /* 浅色模式为深灰 */
+}
+
+/* 添加/编辑域名页面字体 */
+#domain_form label,
+#domain_form input,
+#domain_form select,
+#domain_form span,
+#domain_form h5 {
+    font-size: 0.85rem; /* 与查询结果区域一致 */
 }
 
 /* Flatpickr 时间控件样式 */
