@@ -8,7 +8,7 @@ body {
 /* 查询结果标题（深色模式） */
 .page-title {
     color: #ffffff !important; /* 白色字体 */
-    font-size: 1.25rem !important; /* 减小字号，约 20px */
+    font-size: 1rem !important; /* 调整为 16px */
 }
 
 /* 顶部导航 */
@@ -80,11 +80,10 @@ body {
     top: 56px;
     bottom: 0;
     left: 0;
-    width: 220px;
+    width: 150px; /* 固定宽度，显示图标和文字 */
     background: #2d3748; /* 深色侧边栏 */
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.4);
     padding-top: 20px;
-    transition: width 0.3s ease;
     overflow-y: auto; /* 允许垂直滚动 */
     scrollbar-width: thin; /* 细滚动条 */
     scrollbar-color: #63b3ed #2d3748; /* 滚动条颜色 */
@@ -105,15 +104,16 @@ body {
 
 .sidebar .nav-link {
     color: #ffffff; /* 更亮的白色文字 */
-    padding: 12px 20px;
+    padding: 10px 15px; /* 调整内边距 */
     border-radius: 0 20px 20px 0;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
+    justify-content: flex-start; /* 左对齐 */
 }
 
 .sidebar .nav-link i {
-    margin-right: 10px;
+    margin-right: 10px; /* 图标和文字间距 */
     width: 20px;
     text-align: center;
 }
@@ -138,36 +138,14 @@ body {
     color: #63b3ed;
 }
 
-@media (max-width: 768px) {
-    .sidebar {
-        width: 60px;
-        overflow: hidden;
-    }
-    .sidebar .nav-link span {
-        display: none;
-    }
-    .sidebar:hover {
-        width: 220px;
-    }
-    .sidebar:hover .nav-link span {
-        display: inline;
-    }
-}
-
 /* 内容区域 */
 main {
-    margin-left: 220px;
+    margin-left: 150px; /* 与侧边栏宽度一致 */
     margin-top: 70px;
-    padding: 20px;
+    padding: 15px; /* 减少内边距 */
     background-color: #2d3748; /* 深色内容背景 */
     border-radius: 8px;
     min-height: calc(100vh - 70px);
-}
-
-@media (max-width: 768px) {
-    main {
-        margin-left: 60px;
-    }
 }
 
 /* 卡片 */
@@ -177,6 +155,8 @@ main {
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     transition: transform 0.3s ease;
+    margin: 0 auto;
+    max-width: 100%; /* 确保适配屏幕 */
 }
 
 .card:hover {
@@ -198,6 +178,8 @@ main {
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    width: 100%;
+    table-layout: fixed; /* 固定表格布局 */
 }
 
 .table th,
@@ -206,11 +188,72 @@ main {
     color: #e2e8f0; /* 表格文字稍浅 */
     vertical-align: middle;
     text-align: center; /* 居中显示 */
+    font-size: 0.85rem; /* 再次缩小字体（原 0.9rem，减小约 1 个字号） */
+    padding: 0.3rem; /* 调整内边距 */
+    white-space: nowrap; /* 防止换行 */
 }
 
 .table th {
     background: #2d3748;
     color: #ffffff; /* 更亮的白色 */
+}
+
+.table th:nth-child(1), .table td:nth-child(1) { /* 名称 */
+    max-width: 180px; /* 增加宽度 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.table th:nth-child(2), .table td:nth-child(2) { /* 域名 */
+    max-width: 180px; /* 增加宽度 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.table th:nth-child(3), .table td:nth-child(3) { /* 分组 */
+    width: 70px;
+}
+
+.table th:nth-child(4), .table td:nth-child(4) { /* 频率 */
+    width: 70px;
+}
+
+.table th:nth-child(5), .table td:nth-child(5) { /* 域名到期 */
+    width: 100px;
+}
+
+.table th:nth-child(6), .table td:nth-child(6) { /* 证书到期 */
+    width: 100px;
+}
+
+.table th:nth-child(7), .table td:nth-child(7) { /* 网站监控 */
+    width: 100px;
+}
+
+.table th:nth-child(8), .table td:nth-child(8) { /* 可用率 */
+    width: 70px;
+}
+
+.table th:nth-child(9), .table td:nth-child(9) { /* 创建时间 */
+    width: 110px;
+}
+
+.table th:nth-child(10), .table td:nth-child(10) { /* 检测时间 */
+    width: 110px;
+}
+
+.table th:nth-child(11), .table td:nth-child(11) { /* 响应速度 */
+    width: 90px;
+}
+
+.table th:nth-child(12), .table td:nth-child(12) { /* 操作 */
+    width: 160px;
+}
+
+.table .btn-sm {
+    margin: 0 3px; /* 缩小操作按钮间距 */
+    padding: 0.15rem 0.3rem; /* 进一步缩小按钮 */
+    font-size: 0.75rem; /* 按钮字体 */
 }
 
 .table-hover tbody tr:hover {
@@ -223,8 +266,9 @@ main {
     background: #63b3ed;
     border: none;
     border-radius: 8px;
-    padding: 10px 20px;
+    padding: 6px 12px; /* 缩小按钮 */
     transition: background 0.3s ease, transform 0.2s ease;
+    font-size: 0.85rem; /* 按钮字体 */
 }
 
 .btn-primary:hover {
@@ -291,6 +335,27 @@ body.light-theme .form-label {
 .copy-btn {
     padding: 2px 6px;
     font-size: 12px;
+}
+
+/* 勾选框样式 */
+.custom-control-label::before,
+.custom-control-label::after {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.custom-control-label {
+    padding-left: 0.5rem;
+    font-size: 1rem;
+}
+
+textarea.form-control {
+    resize: none;
+}
+
+textarea#domain_name {
+    line-height: 1.5;
+    font-family: monospace;
 }
 
 /* 登录页面 */

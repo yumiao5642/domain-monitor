@@ -3,26 +3,26 @@
 {% block title %}域名管理 - 域名监控系统{% endblock %}
 {% block nav_title %}域名管理{% endblock %}
 {% block content %}
-<div class="mb-4">
-    <h2 class="text-2xl font-bold page-title"><i class="fas fa-globe mr-2"></i>域名管理</h2>
+<div class="mb-2">
+    <h2 class="text-base font-bold page-title"><i class="fas fa-globe mr-1"></i>域名管理</h2>
     <!-- 查询表单 -->
-    <form method="get" class="mt-4 d-flex justify-content-center">
-        <div class="d-flex flex-wrap align-items-end">
-            <div class="mr-2 mb-2" style="width: 150px;">
-                <label for="name" class="form-label dark:text-gray-800">名称</label>
+    <form method="get" class="mt-1 d-flex justify-content-center">
+        <div class="d-flex flex-nowrap align-items-center">
+            <div class="mr-1" style="width: 90px;">
+                <label for="name" class="form-label dark:text-gray-800 text-sm">名称</label>
                 <input type="text" class="form-control" id="name" name="name" value="{{ name }}">
             </div>
-            <div class="mr-2 mb-2" style="width: 150px;">
-                <label for="domain_name" class="form-label dark:text-gray-800">域名</label>
+            <div class="mr-1" style="width: 90px;">
+                <label for="domain_name" class="form-label dark:text-gray-800 text-sm">域名</label>
                 <input type="text" class="form-control" id="domain_name" name="domain_name" value="{{ domain_name }}">
             </div>
-            <div class="mr-2 mb-2" style="width: 150px;">
-                <label for="group" class="form-label dark:text-gray-800">分组</label>
+            <div class="mr-1" style="width: 90px;">
+                <label for="group" class="form-label dark:text-gray-800 text-sm">分组</label>
                 <input type="text" class="form-control" id="group" name="group" value="{{ group }}">
             </div>
-            <div class="mb-2">
-                <button type="submit" class="btn btn-primary"><i class="fas fa-search mr-2"></i>查询</button>
-                <a href="{% url 'domain_form' %}" class="btn btn-primary ml-2"><i class="fas fa-plus mr-2"></i>添加域名</a>
+            <div class="d-flex align-items-end">
+                <button type="submit" class="btn btn-primary mr-1"><i class="fas fa-search mr-1"></i>查询</button>
+                <a href="{% url 'domain_form' %}" class="btn btn-primary"><i class="fas fa-plus mr-1"></i>添加域名</a>
             </div>
         </div>
     </form>
@@ -50,8 +50,8 @@
                 {% for data in domain_data %}
                 {% with domain=data.domain %}
                 <tr>
-                    <td>{{ domain.task_name }}</td>
-                    <td>
+                    <td class="truncate-name">{{ domain.task_name }}</td>
+                    <td class="truncate-domain">
                         <a href="http://{{ domain.domain_name }}" target="_blank">{{ domain.domain_name }}</a>
                         <button class="btn btn-sm btn-outline-secondary ml-1 copy-btn" data-clipboard-text="{{ domain.domain_name }}"><i class="fas fa-copy"></i></button>
                     </td>
@@ -115,6 +115,31 @@ $(document).ready(function() {
     clipboard.on('error', function(e) {
         alert('复制失败，请手动复制！');
     });
+
+    // 动态截断名称和域名
+    function truncateText() {
+        var maxWidth = $(window).width() > 1200 ? 200 : 150; // 根据屏幕宽度调整最大长度
+        $('.truncate-name, .truncate-domain').each(function() {
+            var $this = $(this);
+            var text = $this.text().trim();
+            var $temp = $('<span>').text(text).css({
+                'visibility': 'hidden',
+                'white-space': 'nowrap',
+                'position': 'absolute'
+            }).appendTo('body');
+            if ($temp.width() > maxWidth) {
+                while ($temp.width() > maxWidth - 20 && text.length > 0) {
+                    text = text.slice(0, -1);
+                    $temp.text(text + '...');
+                }
+                $this.text(text + '...');
+            }
+            $temp.remove();
+        });
+    }
+
+    truncateText();
+    $(window).resize(truncateText);
 });
 </script>
 {% endblock %}

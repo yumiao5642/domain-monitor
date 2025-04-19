@@ -107,7 +107,8 @@ def domain_form(request, domain_id=None):
         domain = None
     if request.method == 'POST':
         try:
-            domain_name = request.POST.get('domain_name')
+            domain_input = request.POST.get('domain_name')
+            domain_names = [name.strip() for name in domain_input.split('\n') if name.strip()] if '\n' in domain_input else [domain_input.strip()]
             task_name = request.POST.get('task_name')
             check_interval = int(request.POST.get('check_interval'))
             check_domain = 'check_domain' in request.POST
@@ -123,10 +124,15 @@ def domain_form(request, domain_id=None):
             notify_inbox = 'notify_inbox' in request.POST
             long_term_monitor = 'long_term_monitor' in request.POST
             end_time = request.POST.get('end_time') or None
-            if end_time:
-                end_time = datetime.strptime(end_time, '%Y-%m-%d').date()
+            if end_time and end_time.strip() and end_time != '00:00:00':
+                try:
+                    end_time = datetime.strptime(end_time, '%Y-%m-%d').date()
+                except ValueError:
+                    end_time = None  # 无效日期时设置为 None
+            else:
+                end_time = None
             if domain:
-                domain.domain_name = domain_name
+                domain.domain_name = domain_names[0]
                 domain.task_name = task_name
                 domain.check_interval = check_interval
                 domain.check_domain = check_domain
@@ -134,7 +140,6 @@ def domain_form(request, domain_id=None):
                 domain.check_https = check_https
                 domain.group = group
                 domain.response_time_threshold = response_time_threshold
-                domain.check_unreachable = check_unreachable
                 domain.alert_threshold = alert_threshold
                 domain.notify_telegram = notify_telegram
                 domain.notify_email = notify_email
@@ -143,25 +148,25 @@ def domain_form(request, domain_id=None):
                 domain.end_time = end_time
                 domain.save()
             else:
-                Domain.objects.create(
-                    user=request.user,
-                    domain_name=domain_name,
-                    task_name=task_name,
-                    check_interval=check_interval,
-                    check_domain=check_domain,
-                    check_cert=check_cert,
-                    check_https=check_https,
-                    group=group,
-                    response_time_threshold=response_time_threshold,
-                    check_unreachable=check_unreachable,
-                    alert_threshold=alert_threshold,
-                    notify_telegram=notify_telegram,
-                    notify_email=notify_email,
-                    notify_inbox=notify_inbox,
-                    long_term_monitor=long_term_monitor,
-                    end_time=end_time,
-                    next_check=timezone.now()
-                )
+                for domain_name in domain_names:
+                    Domain.objects.create(
+                        user=request.user,
+                        domain_name=domain_name,
+                        task_name=task_name,
+                        check_interval=check_interval,
+                        check_domain=check_domain,
+                        check_cert=check_cert,
+                        check_https=check_https,
+                        group=group,
+                        response_time_threshold=response_time_threshold,
+                        alert_threshold=alert_threshold,
+                        notify_telegram=notify_telegram,
+                        notify_email=notify_email,
+                        notify_inbox=notify_inbox,
+                        long_term_monitor=long_term_monitor,
+                        end_time=end_time,
+                        next_check=timezone.now()
+                    )
             return redirect('domain_list')
         except IntegrityError:
             return render(request, 'domain_form.html', {'error': '域名已存在', 'domain': domain})
@@ -172,7 +177,7 @@ def domain_form(request, domain_id=None):
     #    {'name': '低频监控', 'interval': 86400, 'check_domain': True, 'check_cert': True, 'check_https': False},
     #]
     groups = Domain.objects.values_list('group', flat=True).distinct().exclude(group='')
-    return render(request, 'domain_form.html', {'domain': domain, 'templates': templates, 'groups': groups})
+    return render(request, 'domain_form.html', {'domain': domain, 'groups': groups})
 
 # 告警配置视图
 @login_required
