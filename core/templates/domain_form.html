@@ -23,14 +23,14 @@
                     <div class="form-group row mb-3">
                         <label for="task_name" class="col-sm-2 col-form-label dark:text-gray-800"><i class="fas fa-tasks mr-2"></i>任务名称</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="task_name" name="task_name" maxlength="100" style="width: 200px;" value="{{ domain.task_name|default:'' }}" required>
+                            <input type="text" class="form-control" id="task_name" name="task_name" maxlength="20" style="width: 100%; max-width: 200px;" value="{{ domain.task_name|default:'' }}" required>
                         </div>
                     </div>
                     <!-- 域名 -->
                     <div class="form-group row mb-3">
                         <label for="domain_name" class="col-sm-2 col-form-label dark:text-gray-800"><i class="fas fa-globe mr-2"></i>域名</label>
                         <div class="col-sm-10 d-flex align-items-center">
-                            <input type="text" class="form-control mr-2" id="domain_name" name="domain_name" maxlength="255" style="width: 200px;" value="{{ domain.domain_name|default:'' }}" required>
+                            <input type="text" class="form-control mr-2" id="domain_name" name="domain_name" maxlength="200" style="width: 100%; max-width: 200px;" value="{{ domain.domain_name|default:'' }}" required>
                             <button type="button" class="btn btn-primary" id="bulk_add_btn"><i class="fas fa-plus-square mr-2"></i>批量添加</button>
                         </div>
                     </div>
@@ -38,58 +38,58 @@
                     <div class="form-group row mb-3">
                         <label for="group" class="col-sm-2 col-form-label dark:text-gray-800"><i class="fas fa-folder mr-2"></i>分组</label>
                         <div class="col-sm-10 d-flex align-items-center">
-                            <select class="form-control mr-2" id="group" name="group" style="width: 200px;">
+                            <select class="form-control mr-2" id="group" name="group" style="width: 100%; max-width: 200px;">
                                 <option value="默认组" {% if domain.group == '默认组' %}selected{% endif %}>默认组</option>
                                 {% for group_name in groups %}
                                 <option value="{{ group_name }}" {% if group_name == domain.group %}selected{% endif %}>{{ group_name }}</option>
                                 {% endfor %}
                             </select>
-                            <button type="button" class="btn btn-primary ml-2" id="create_group_btn"><i class="fas fa-plus mr-2"></i>新建</button>
+                            <button type="button" class="btn btn-primary ml-2" id="create_group_btn" data-toggle="modal" data-target="#createGroupModal"><i class="fas fa-plus mr-2"></i>新建</button>
                         </div>
                     </div>
                     <!-- 监控设置 -->
                     <h5 class="dark:text-gray-800 mb-3 mt-4">监控设置</h5>
                     <div class="form-group row mb-3">
                         <label for="check_interval" class="col-sm-2 col-form-label dark:text-gray-800"><i class="fas fa-clock mr-2"></i>检测频率</label>
-                        <div class="col-sm-10 d-flex align-items-center">
-                            <input type="number" class="form-control mr-2" id="check_interval" name="check_interval" style="width: 100px;" value="{{ domain.check_interval|default:'3600' }}" required>
-                            <span class="dark:text-gray-800 mr-2">（秒）</span>
-                            <span class="dark:text-gray-800">最低300秒，即5分钟，30分钟=1800秒，1小时=3600秒，1天=86400秒。</span>
+                        <div class="col-sm-10 d-flex align-items-center flex-wrap">
+                            <input type="number" class="form-control mr-2 mb-1" id="check_interval" name="check_interval" style="width: 100%; max-width: 100px;" value="{{ domain.check_interval|default:'3600' }}" required>
+                            <span class="dark:text-gray-800 mr-2 mb-1">（秒）</span>
+                            <span class="dark:text-gray-800 mb-1">最低300秒，即5分钟，30分钟=1800秒，1小时=3600秒，1天=86400秒。</span>
                         </div>
                     </div>
                     <div class="form-group row mb-3">
                         <div class="col-sm-2"></div>
                         <div class="col-sm-10">
-                            <div class="custom-control custom-checkbox mb-2">
+                            <div class="custom-control custom-checkbox mb-2 d-flex align-items-center">
                                 <input type="checkbox" class="custom-control-input" id="check_domain" name="check_domain" {% if domain.check_domain|default:True %}checked{% endif %}>
-                                <label class="custom-control-label dark:text-gray-800" for="check_domain"><i class="fas fa-server mr-2"></i>监控域名到期</label>
+                                <label class="custom-control-label dark:text-gray-800 ml-2" for="check_domain"><i class="fas fa-server mr-2"></i>监控域名到期</label>
                             </div>
-                            <div class="custom-control custom-checkbox mb-2">
+                            <div class="custom-control custom-checkbox mb-2 d-flex align-items-center">
                                 <input type="checkbox" class="custom-control-input" id="check_cert" name="check_cert" {% if domain.check_cert|default:True %}checked{% endif %}>
-                                <label class="custom-control-label dark:text-gray-800" for="check_cert"><i class="fas fa-certificate mr-2"></i>监控证书到期</label>
+                                <label class="custom-control-label dark:text-gray-800 ml-2" for="check_cert"><i class="fas fa-certificate mr-2"></i>监控证书到期</label>
                             </div>
-                            <div class="custom-control custom-checkbox">
+                            <div class="custom-control custom-checkbox d-flex align-items-center">
                                 <input type="checkbox" class="custom-control-input" id="check_https" name="check_https" {% if domain.check_https|default:True %}checked{% endif %}>
-                                <label class="custom-control-label dark:text-gray-800" for="check_https"><i class="fas fa-globe-asia mr-2"></i>监控网站状态</label>
+                                <label class="custom-control-label dark:text-gray-800 ml-2" for="check_https"><i class="fas fa-globe-asia mr-2"></i>监控网站状态</label>
                             </div>
                         </div>
                     </div>
                     <!-- 异常条件 -->
                     <div class="form-group row mb-3">
                         <label class="col-sm-2 col-form-label dark:text-gray-800"><i class="fas fa-hourglass-half mr-2"></i>异常条件</label>
-                        <div class="col-sm-10 d-flex align-items-center">
-                            <span class="mr-2 dark:text-gray-800">响应时间超过</span>
-                            <input type="number" class="form-control mr-2" id="response_time_threshold" name="response_time_threshold" style="width: 100px;" value="{{ domain.response_time_threshold|default:'1000' }}">
-                            <span class="mr-2 dark:text-gray-800">（毫秒），或URL无法访问。</span>
+                        <div class="col-sm-10 d-flex align-items-center flex-wrap">
+                            <span class="mr-2 dark:text-gray-800 mb-1">响应时间超过</span>
+                            <input type="number" class="form-control mr-2 mb-1" id="response_time_threshold" name="response_time_threshold" style="width: 100%; max-width: 100px;" value="{{ domain.response_time_threshold|default:'1000' }}">
+                            <span class="mr-2 dark:text-gray-800 mb-1">（毫秒），或URL无法访问。</span>
                         </div>
                     </div>
                     <!-- 告警条件 -->
                     <div class="form-group row mb-3">
                         <label class="col-sm-2 col-form-label dark:text-gray-800"><i class="fas fa-bell mr-2"></i>告警条件</label>
-                        <div class="col-sm-10 d-flex align-items-center">
-                            <span class="mr-2 dark:text-gray-800">异常次数连续</span>
-                            <input type="number" class="form-control mr-2" id="alert_threshold" name="alert_threshold" style="width: 100px;" value="{{ domain.alert_threshold|default:'3' }}">
-                            <span class="dark:text-gray-800">次，触发告警。</span>
+                        <div class="col-sm-10 d-flex align-items-center flex-wrap">
+                            <span class="mr-2 dark:text-gray-800 mb-1">异常次数连续</span>
+                            <input type="number" class="form-control mr-2 mb-1" id="alert_threshold" name="alert_threshold" style="width: 100%; max-width: 100px;" value="{{ domain.alert_threshold|default:'3' }}">
+                            <span class="dark:text-gray-800 mb-1">次，触发告警。</span>
                         </div>
                     </div>
                     <!-- 通知方式 -->
@@ -97,29 +97,30 @@
                     <div class="form-group row mb-3">
                         <div class="col-sm-2"></div>
                         <div class="col-sm-10">
-                            <div class="custom-control custom-checkbox mb-2">
+                            <div class="custom-control custom-checkbox mb-2 d-flex align-items-center">
                                 <input type="checkbox" class="custom-control-input" id="notify_telegram" name="notify_telegram" {% if domain.notify_telegram|default:False %}checked{% endif %}>
-                                <label class="custom-control-label dark:text-gray-800" for="notify_telegram"><i class="fab fa-telegram mr-2"></i>Telegram</label>
+                                <label class="custom-control-label dark:text-gray-800 ml-2" for="notify_telegram"><i class="fab fa-telegram mr-2"></i>Telegram</label>
                             </div>
-                            <div class="custom-control custom-checkbox mb-2">
+                            <div class="custom-control custom-checkbox mb-2 d-flex align-items-center">
                                 <input type="checkbox" class="custom-control-input" id="notify_email" name="notify_email" {% if domain.notify_email|default:False %}checked{% endif %}>
-                                <label class="custom-control-label dark:text-gray-800" for="notify_email"><i class="fas fa-envelope mr-2"></i>邮箱</label>
+                                <label class="custom-control-label dark:text-gray-800 ml-2" for="notify_email"><i class="fas fa-envelope mr-2"></i>邮箱</label>
                             </div>
-                            <div class="custom-control custom-checkbox">
+                            <div class="custom-control custom-checkbox d-flex align-items-center">
                                 <input type="checkbox" class="custom-control-input" id="notify_inbox" name="notify_inbox" {% if domain.notify_inbox|default:False %}checked{% endif %}>
-                                <label class="custom-control-label dark:text-gray-800" for="notify_inbox"><i class="fas fa-inbox mr-2"></i>站内信</label>
+                                <label class="custom-control-label dark:text-gray-800 ml-2" for="notify_inbox"><i class="fas fa-inbox mr-2"></i>站内信</label>
                             </div>
                         </div>
                     </div>
                     <!-- 长期监控 -->
                     <div class="form-group row mb-3">
                         <label for="long_term_monitor" class="col-sm-2 col-form-label dark:text-gray-800"><i class="fas fa-toggle-on mr-2"></i>长期监控</label>
-                        <div class="col-sm-10 d-flex align-items-center">
+                        <div class="col-sm-10 d-flex align-items-center flex-wrap">
                             <div class="custom-control custom-checkbox mr-3">
                                 <input type="checkbox" class="custom-control-input" id="long_term_monitor" name="long_term_monitor" {% if domain.long_term_monitor|default:True %}checked{% endif %}>
                                 <label class="custom-control-label dark:text-gray-800" for="long_term_monitor"></label>
                             </div>
-                            <input type="text" class="form-control" id="end_time" name="end_time" placeholder="选择任务结束时间" style="width: 200px; display: {% if domain.long_term_monitor|default:True %}none{% else %}block{% endif %};" value="{{ domain.end_time|date:'Y-m-d' }}">
+                            <span class="mr-2 dark:text-gray-800 mb-1" id="end_time_label" style="display: {% if domain.long_term_monitor|default:True %}none{% else %}inline{% endif %};">监控任务截止到：</span>
+                            <input type="text" class="form-control mb-1" id="end_time" name="end_time" placeholder="选择任务结束时间" style="width: 100%; max-width: 200px; display: {% if domain.long_term_monitor|default:True %}none{% else %}block{% endif %};" value="{{ domain.end_time|date:'Y-m-d' }}">
                         </div>
                     </div>
                     <div class="form-group row mt-3">
@@ -134,6 +135,29 @@
         </div>
     </div>
 </div>
+
+<!-- 新建分组模态框 -->
+<div class="modal fade" id="createGroupModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title dark:text-gray-800">新建分组</h5>
+                <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+            </div>
+            <div class="modal-body">
+                <form id="create-group-form">
+                    <div class="form-group">
+                        <label for="new-group-name">分组名称</label>
+                        <input type="text" class="form-control" id="new-group-name" maxlength="20" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">确定</button>
+                    <button type="button" class="btn btn-secondary ml-2" data-dismiss="modal">取消</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
@@ -142,21 +166,21 @@
 $(document).ready(function() {
     // 输入长度验证
     $('#task_name').on('input', function() {
-        if ($(this).val().length > 100) {
-            alert('文字超过长度限制：100字符');
-            $(this).val($(this).val().slice(0, 100));
+        if ($(this).val().length > 20) {
+            alert('任务名称超过长度限制：20字符');
+            $(this).val($(this).val().slice(0, 20));
         }
     });
     $('#domain_name').on('input', function() {
-        if ($(this).val().length > 255) {
-            alert('文字超过长度限制：255字符');
-            $(this).val($(this).val().slice(0, 255));
+        if ($(this).val().length > 200) {
+            alert('域名超过长度限制：200字符');
+            $(this).val($(this).val().slice(0, 200));
         }
     });
-    $('#group').on('change', function() {
-        if ($(this).val().length > 100) {
-            alert('文字超过长度限制：100字符');
-            $(this).val($(this).val().slice(0, 100));
+    $('#new-group-name').on('input', function() {
+        if ($(this).val().length > 20) {
+            alert('分组名称超过长度限制：20字符');
+            $(this).val($(this).val().slice(0, 20));
         }
     });
 
@@ -175,13 +199,13 @@ $(document).ready(function() {
         if ($domain_input.is('input')) {
             // 切换为 textarea
             $domain_input.replaceWith(`
-                <textarea class="form-control mr-2" id="domain_name" name="domain_name" rows="4" style="width: 300px;" placeholder="每行一个域名。"></textarea>
+                <textarea class="form-control mr-2" id="domain_name" name="domain_name" rows="4" style="width: 100%; max-width: 300px;" placeholder="每行一个域名。"></textarea>
             `);
             $(this).text('单行添加');
         } else {
             // 切换回 input
             $domain_input.replaceWith(`
-                <input type="text" class="form-control mr-2" id="domain_name" name="domain_name" maxlength="255" style="width: 200px;" value="" required>
+                <input type="text" class="form-control mr-2" id="domain_name" name="domain_name" maxlength="200" style="width: 100%; max-width: 200px;" value="" required>
             `);
             $(this).html('<i class="fas fa-plus-square mr-2"></i>批量添加');
         }
@@ -197,16 +221,18 @@ $(document).ready(function() {
     });
 
     // 新建分组
-    $('#create_group_btn').click(function() {
-        var group_name = prompt('请输入新分组名称：');
-        if (group_name && group_name.trim() !== '') {
-            if (group_name.length > 100) {
-                alert('分组名称超过长度限制：100字符');
+    $('#create-group-form').on('submit', function(e) {
+        e.preventDefault();
+        var group_name = $('#new-group-name').val().trim();
+        if (group_name !== '') {
+            if (group_name.length > 20) {
+                alert('分组名称超过长度限制：20字符');
                 return;
             }
             var $group_select = $('#group');
-            $group_select.append(new Option(group_name.trim(), group_name.trim(), true, true));
-            alert('分组 ' + group_name.trim() + ' 创建成功！');
+            $group_select.append(new Option(group_name, group_name, true, true));
+            $('#createGroupModal').modal('hide');
+            $('#new-group-name').val('');
         }
     });
 
@@ -214,8 +240,10 @@ $(document).ready(function() {
     $('#long_term_monitor').change(function() {
         if ($(this).is(':checked')) {
             $('#end_time').hide();
+            $('#end_time_label').hide();
         } else {
             $('#end_time').show();
+            $('#end_time_label').show();
         }
     });
 

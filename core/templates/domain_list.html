@@ -1,26 +1,28 @@
-{% extends 'base.html' %}
+i{% extends 'base.html' %}
 {% load static %}
 {% block title %}域名管理 - 域名监控系统{% endblock %}
 {% block nav_title %}域名管理{% endblock %}
 {% block content %}
 <div class="mb-2">
-    <h2 class="text-base font-bold page-title"><i class="fas fa-globe mr-1"></i>域名管理</h2>
     <!-- 查询表单 -->
     <form method="get" class="mt-1 d-flex justify-content-start">
-        <div class="d-flex flex-nowrap align-items-center">
-            <div class="mr-1" style="width: 90px;">
-                <label for="name" class="form-label dark:text-gray-800 text-sm">名称</label>
-                <input type="text" class="form-control" id="name" name="name" value="{{ name }}">
+        <div class="d-flex flex-wrap align-items-center">
+            <div class="mr-1 mb-1" style="width: 25%; max-width: 90px;">
+                <input type="text" class="form-control" id="name" name="name" placeholder="名称" value="{{ name }}">
             </div>
-            <div class="mr-1" style="width: 90px;">
-                <label for="domain_name" class="form-label dark:text-gray-800 text-sm">域名</label>
-                <input type="text" class="form-control" id="domain_name" name="domain_name" value="{{ domain_name }}">
+            <div class="mr-1 mb-1" style="width: 25%; max-width: 90px;">
+                <input type="text" class="form-control" id="domain_name" name="domain_name" placeholder="域名" value="{{ domain_name }}">
             </div>
-            <div class="mr-1" style="width: 90px;">
-                <label for="group" class="form-label dark:text-gray-800 text-sm">分组</label>
-                <input type="text" class="form-control" id="group" name="group" value="{{ group }}">
+            <div class="mr-1 mb-1" style="width: 25%; max-width: 90px;">
+                <select class="form-control" id="group" name="group" style="width: 100%;">
+                    <option value="">分组</option>
+                    {% for group_name in groups %}
+                    <option value="{{ group_name }}" {% if group_name == group %}selected{% endif %}>{{ group_name }}</option>
+                    {% endfor %}
+                    <option value="new_group">新建分组</option>
+                </select>
             </div>
-            <div class="d-flex align-items-end">
+            <div class="d-flex align-items-end mb-1">
                 <button type="submit" class="btn btn-primary mr-1"><i class="fas fa-search mr-1"></i>查询</button>
                 <a href="{% url 'domain_form' %}" class="btn btn-primary"><i class="fas fa-plus mr-1"></i>添加</a>
             </div>
@@ -29,80 +31,155 @@
 </div>
 <div class="card">
     <div class="card-body">
-        <table class="table table-hover text-center">
-            <thead>
-                <tr>
-                    <th>名称</th>
-                    <th>域名</th>
-                    <th>分组</th>
-                    <th>频率</th>
-                    <th>域名到期</th>
-                    <th>证书到期</th>
-                    <th>网站监控</th>
-                    <th>可用率</th>
-                    <th>创建时间</th>
-                    <th>检测时间</th>
-                    <th>响应速度</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for data in domain_data %}
-                {% with domain=data.domain %}
-                <tr>
-                    <td class="truncate-name">{{ domain.task_name }}</td>
-                    <td class="truncate-domain">
-                        <a href="https://{{ domain.domain_name }}" target="_blank">{{ domain.domain_name }}</a>
-                        <button class="btn btn-sm btn-outline-secondary ml-1 copy-btn" data-clipboard-text="{{ domain.domain_name }}"><i class="fas fa-copy"></i></button>
-                        <span class="copy-tooltip">已复制</span>
-                    </td>
-                    <td>{{ domain.group|default:'无' }}</td>
-                    <td>{{ data.formatted_interval }}</td>
-                    <td>
-                        <span class="mr-1 {% if domain.check_domain %}text-success{% else %}text-secondary{% endif %}">
-                            {% if domain.check_domain %}开启中{% else %}已关闭{% endif %}
-                        </span>
-                        <a href="{% url 'toggle_monitor' domain.id 'domain' %}" class="btn btn-sm {% if domain.check_domain %}btn-secondary{% else %}btn-success{% endif %}">
-                            {% if domain.check_domain %}关{% else %}开{% endif %}
-                        </a>
-                    </td>
-                    <td>
-                        <span class="mr-1 {% if domain.check_cert %}text-success{% else %}text-secondary{% endif %}">
-                            {% if domain.check_cert %}开启中{% else %}已关闭{% endif %}
-                        </span>
-                        <a href="{% url 'toggle_monitor' domain.id 'cert' %}" class="btn btn-sm {% if domain.check_cert %}btn-secondary{% else %}btn-success{% endif %}">
-                            {% if domain.check_cert %}关{% else %}开{% endif %}
-                        </a>
-                    </td>
-                    <td>
-                        <span class="mr-1 {% if domain.check_https %}text-success{% else %}text-secondary{% endif %}">
-                            {% if domain.check_https %}开启中{% else %}已关闭{% endif %}
-                        </span>
-                        <a href="{% url 'toggle_monitor' domain.id 'https' %}" class="btn btn-sm {% if domain.check_https %}btn-secondary{% else %}btn-success{% endif %}">
-                            {% if domain.check_https %}关{% else %}开{% endif %}
-                        </a>
-                    </td>
-                    <td>{{ data.availability }}%</td>
-                    <td>{{ domain.create_time|date:"Y-m-d H:i:s" }}</td>
-                    <td>{{ data.last_check_time|date:"Y-m-d H:i:s"|default:'无' }}</td>
-                    <td>{{ data.last_response_time|default:'无' }}秒</td>
-                    <td class="d-flex justify-content-around">
-                        <a href="{% url 'toggle_all_monitors' domain.id 'on' %}" class="btn btn-sm btn-success">开</a>
-                        <a href="{% url 'toggle_all_monitors' domain.id 'off' %}" class="btn btn-sm btn-secondary">关</a>
-                        <a href="{% url 'domain_form' domain.id %}" class="btn btn-sm btn-info"><i class="fas fa-edit"></i> 编辑</a>
-                        <a href="{% url 'delete_domain' domain.id %}" class="btn btn-sm btn-danger" onclick="return confirm('确定删除此域名？');"><i class="fas fa-trash"></i> 删除</a>
-                    </td>
-                </tr>
-                {% endwith %}
-                {% empty %}
-                <tr>
-                    <td colspan="12" class="text-center text-gray-600">暂无域名数据</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <form method="post" id="bulk_action_form">
+            {% csrf_token %}
+            <table class="table table-hover text-center">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="select_all"></th>
+                        <th>名称</th>
+                        <th>域名</th>
+                        <th>分组</th>
+                        <th>频率</th>
+                        <th>域名到期</th>
+                        <th>证书到期</th>
+                        <th>网站监控</th>
+                        <th>可用率</th>
+                        <th>创建时间</th>
+                        <th>检测时间</th>
+                        <th>响应速度</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in domain_data %}
+                    {% with domain=data.domain %}
+                    <tr>
+                        <td><input type="checkbox" name="selected_domains" value="{{ domain.id }}" class="select_domain"></td>
+                        <td class="truncate-name">{{ domain.task_name }}</td>
+                        <td class="truncate-domain text-left">
+                            <a href="https://{{ domain.domain_name }}" target="_blank">{{ domain.domain_name }}</a>
+                            <button class="btn btn-sm btn-outline-secondary ml-1 copy-btn" data-clipboard-text="{{ domain.domain_name }}"><i class="fas fa-copy"></i></button>
+                            <span class="copy-tooltip">已复制</span>
+                        </td>
+                        <td>{{ domain.group|default:'无' }}</td>
+                        <td>{{ data.formatted_interval }}</td>
+                        <td>
+                            <span class="mr-1 {% if domain.check_domain %}text-success{% else %}text-secondary{% endif %}">
+                                {% if domain.check_domain %}开启中{% else %}已关闭{% endif %}
+                            </span>
+                            <a href="{% url 'toggle_monitor' domain.id 'domain' %}" class="btn btn-sm {% if domain.check_domain %}btn-secondary{% else %}btn-success{% endif %}">
+                                {% if domain.check_domain %}关{% else %}开{% endif %}
+                            </a>
+                        </td>
+                        <td>
+                            <span class="mr-1 {% if domain.check_cert %}text-success{% else %}text-secondary{% endif %}">
+                                {% if domain.check_cert %}开启中{% else %}已关闭{% endif %}
+                            </span>
+                            <a href="{% url 'toggle_monitor' domain.id 'cert' %}" class="btn btn-sm {% if domain.check_cert %}btn-secondary{% else %}btn-success{% endif %}">
+                                {% if domain.check_cert %}关{% else %}开{% endif %}
+                            </a>
+                        </td>
+                        <td>
+                            <span class="mr-1 {% if domain.check_https %}text-success{% else %}text-secondary{% endif %}">
+                                {% if domain.check_https %}开启中{% else %}已关闭{% endif %}
+                            </span>
+                            <a href="{% url 'toggle_monitor' domain.id 'https' %}" class="btn btn-sm {% if domain.check_https %}btn-secondary{% else %}btn-success{% endif %}">
+                                {% if domain.check_https %}关{% else %}开{% endif %}
+                            </a>
+                        </td>
+                        <td>{{ data.availability }}%</td>
+                        <td>{{ domain.create_time|date:"Y-m-d H:i:s" }}</td>
+                        <td>{{ data.last_check_time|date:"Y-m-d H:i:s"|default:'无' }}</td>
+                        <td>{{ data.last_response_time|default:'无' }}秒</td>
+                        <td class="d-flex justify-content-around">
+                            <a href="{% url 'toggle_all_monitors' domain.id 'on' %}" class="btn btn-sm btn-success">开</a>
+                            <a href="{% url 'toggle_all_monitors' domain.id 'off' %}" class="btn btn-sm btn-secondary">关</a>
+                            <a href="{% url 'domain_form' domain.id %}" class="btn btn-sm btn-info"><i class="fas fa-edit"></i> 编辑</a>
+                            <a href="{% url 'delete_domain' domain.id %}" class="btn btn-sm btn-danger" onclick="return confirm('确定删除此域名？');"><i class="fas fa-trash"></i> 删除</a>
+                        </td>
+                    </tr>
+                    {% endwith %}
+                    {% empty %}
+                    <tr>
+                        <td colspan="13" class="text-center text-gray-600">暂无域名数据</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <div class="mb-2">
+                    <select id="bulk_action_select" name="bulk_action" class="form-control d-inline-block" style="width: auto;">
+                        <option value="">批量操作</option>
+                        <option value="enable">批量开启</option>
+                        <option value="disable">批量关闭</option>
+                        <option value="delete">批量删除</option>
+                    </select>
+                    <button type="button" class="btn btn-primary ml-2" id="bulk_action_btn">执行</button>
+                </div>
+                <div class="mb-2">
+                    <span class="mr-2">第 {{ page_obj.number }} 页（共 {{ page_obj.paginator.num_pages }} 页）</span>
+                    <select id="per_page_select" name="per_page" class="form-control d-inline-block" style="width: auto;">
+                        <option value="20" {% if per_page == 20 %}selected{% endif %}>20</option>
+                        <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+                        <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
+                        <option value="200" {% if per_page == 200 %}selected{% endif %}>200</option>
+                    </select>
+                    <div class="d-inline-block">
+                        {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}&name={{ name }}&domain_name={{ domain_name }}&group={{ group }}&per_page={{ per_page }}" class="btn btn-primary btn-sm">上一页</a>
+                        {% endif %}
+                        {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}&name={{ name }}&domain_name={{ domain_name }}&group={{ group }}&per_page={{ per_page }}" class="btn btn-primary btn-sm">下一页</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
+
+<!-- 新建分组模态框 -->
+<div class="modal fade" id="createGroupModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title dark:text-gray-800">新建分组</h5>
+                <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+            </div>
+            <div class="modal-body">
+                <form id="create-group-form">
+                    <div class="form-group">
+                        <label for="new-group-name">分组名称</label>
+                        <input type="text" class="form-control" id="new-group-name" maxlength="20" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">确定</button>
+                    <button type="button" class="btn btn-secondary ml-2" data-dismiss="modal">取消</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 批量操作确认模态框 -->
+<div class="modal fade" id="bulkActionConfirmModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title dark:text-gray-800">确认批量操作</h5>
+                <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+            </div>
+            <div class="modal-body">
+                <p id="bulk-action-message"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="bulk-action-confirm-btn">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js"></script>
 <script>
@@ -127,7 +204,7 @@ $(document).ready(function() {
 
     // 动态截断名称和域名
     function truncateText() {
-        var maxWidth = $(window).width() > 1200 ? 200 : 150; // 根据屏幕宽度调整最大长度
+        var maxWidth = $(window).width() > 1200 ? 200 : ($(window).width() > 768 ? 150 : 100);
         $('.truncate-name, .truncate-domain').each(function() {
             var $this = $(this);
             var text = $this.text().trim();
@@ -149,6 +226,78 @@ $(document).ready(function() {
 
     truncateText();
     $(window).resize(truncateText);
+
+    // 全选/取消全选
+    $('#select_all').on('change', function() {
+        $('.select_domain').prop('checked', $(this).prop('checked'));
+    });
+
+    $('.select_domain').on('change', function() {
+        if ($('.select_domain:checked').length === $('.select_domain').length) {
+            $('#select_all').prop('checked', true);
+        } else {
+            $('#select_all').prop('checked', false);
+        }
+    });
+
+    // 每页条数选择
+    $('#per_page_select').on('change', function() {
+        var url = new URL(window.location.href);
+        url.searchParams.set('per_page', $(this).val());
+        url.searchParams.set('page', 1); // 重置到第一页
+        window.location.href = url.toString();
+    });
+
+    // 新建分组
+    $('#group').on('change', function() {
+        if ($(this).val() === 'new_group') {
+            $('#createGroupModal').modal('show');
+            $(this).val('');
+        }
+    });
+
+    $('#create-group-form').on('submit', function(e) {
+        e.preventDefault();
+        var group_name = $('#new-group-name').val().trim();
+        if (group_name !== '') {
+            if (group_name.length > 20) {
+                alert('分组名称超过长度限制：20字符');
+                return;
+            }
+            var $group_select = $('#group');
+            $group_select.find('option[value=""]').after(new Option(group_name, group_name, true, true));
+            $('#createGroupModal').modal('hide');
+            $('#new-group-name').val('');
+        }
+    });
+
+    // 批量操作
+    $('#bulk_action_btn').on('click', function() {
+        var action = $('#bulk_action_select').val();
+        var selected_count = $('.select_domain:checked').length;
+
+        if (!action || selected_count === 0) {
+            alert('请选择操作和至少一个域名！');
+            return;
+        }
+
+        var message = '';
+        if (action === 'enable') {
+            message = `确定要批量开启 ${selected_count} 个域名吗？`;
+        } else if (action === 'disable') {
+            message = `确定要批量关闭 ${selected_count} 个域名吗？`;
+        } else if (action === 'delete') {
+            message = `确定要批量删除 ${selected_count} 个域名吗？此操作不可恢复！`;
+        }
+
+        $('#bulk-action-message').text(message);
+        $('#bulkActionConfirmModal').modal('show');
+    });
+
+    $('#bulk-action-confirm-btn').on('click', function() {
+        $('#bulk_action_form').attr('action', '{% url "bulk_action" %}');
+        $('#bulk_action_form').submit();
+    });
 });
 </script>
 {% endblock %}
