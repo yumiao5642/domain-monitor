@@ -1,4 +1,4 @@
-i/* 全局样式（深色模式） */
+/* 全局样式（深色模式） */
 body {
     font-family: 'Arial', 'PingFang SC', sans-serif;
     background-color: #1a202c; /* 深灰色背景 */
@@ -139,29 +139,10 @@ body {
     color: #63b3ed;
 }
 
-/* 内容区域 */
-main {
-    margin-left: 206px; /* 左侧菜单 150px + 空隙 56px */
-    margin-top: 112px; /* 导航栏 56px + 空隙 56px */
-    margin-right: 56px; /* 右侧空隙 56px */
-    margin-bottom: 56px; /* 底部空隙 56px */
-    padding: 15px; /* 减少内边距 */
-    background-color: #2d3748; /* 深色内容背景 */
-    border-radius: 8px;
-    min-height: calc(100vh - 112px - 56px);
-}
-
 /* 自适应调整 */
 @media (max-width: 1200px) {
     .sidebar {
         width: 120px;
-    }
-    main {
-        margin-left: 176px; /* 120px + 56px */
-        margin-right: 40px;
-        margin-top: 96px; /* 56px + 40px */
-        margin-bottom: 40px;
-        min-height: calc(100vh - 96px - 40px);
     }
 }
 
@@ -169,12 +150,47 @@ main {
     .sidebar {
         width: 100px;
     }
+    .sidebar .nav-link {
+        padding: 8px 10px;
+        font-size: 0.9rem;
+    }
+    .sidebar .nav-link i {
+        margin-right: 5px;
+    }
+}
+
+/* 内容区域 */
+/* 内容区域 */
+main {
+    margin-left: 153px; /* 左侧菜单 150px + 空隙 3px */
+    margin-top: 59px; /* 导航栏 56px + 空隙 3px */
+    margin-right: 3px; /* 右侧空隙 3px */
+    margin-bottom: 3px; /* 底部空隙 3px */
+    padding: 15px; /* 内边距 */
+    background-color: #2d3748; /* 深色内容背景 */
+    border-radius: 8px;
+    min-height: calc(100vh - 59px - 3px);
+}
+
+/* 自适应内容区域 */
+@media (max-width: 1200px) {
     main {
-        margin-left: 156px; /* 100px + 56px */
-        margin-right: 30px;
-        margin-top: 86px; /* 56px + 30px */
-        margin-bottom: 30px;
-        min-height: calc(100vh - 86px - 30px);
+        margin-left: 123px; /* 120px + 3px */
+        margin-right: 3px;
+        margin-top: 59px; /* 56px + 3px */
+        margin-bottom: 3px;
+        min-height: calc(100vh - 59px - 3px);
+    }
+}
+
+@media (max-width: 768px) {
+    main {
+        margin-left: 103px; /* 100px + 3px */
+        margin-right: 3px;
+        margin-top: 59px; /* 56px + 3px */
+        margin-bottom: 3px;
+        min-height: calc(100vh - 59px - 3px);
+        padding: 10px;
     }
 }
 
@@ -315,6 +331,10 @@ main {
     .table th:nth-child(13), .table td:nth-child(13) { /* 操作 */
         width: 22%;
     }
+    .table th, .table td {
+        font-size: 0.75rem;
+        padding: 0.2rem;
+    }
 }
 
 .table .btn-sm {
@@ -356,6 +376,14 @@ main {
     transform: scale(1.05);
 }
 
+/* 自适应按钮 */
+@media (max-width: 768px) {
+    .btn-primary {
+        padding: 4px 8px;
+        font-size: 0.75rem;
+    }
+}
+
 /* 查询表单 */
 .form-control {
     background: #2d3748;
@@ -373,6 +401,30 @@ main {
     color: #a0aec0; /* 浅色占位符 */
 }
 
+/* 自适应查询表单 */
+@media (max-width: 768px) {
+    .form-control {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+/* 分页和条数选择 */
+.pagination-section {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+@media (max-width: 768px) {
+    .pagination-section {
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 5px;
+    }
+}
+
 /* 添加/编辑域名页面字体 */
 #domain_form label,
 #domain_form input,
@@ -387,8 +439,12 @@ main {
     #domain_form .form-group {
         margin-bottom: 0.5rem;
     }
-    .form-group label {
-        margin-bottom: 0.2rem; /* 减少标签底部间距 */
+    #domain_form label,
+    #domain_form input,
+    #domain_form select,
+    #domain_form span,
+    #domain_form h5 {
+        font-size: 0.75rem;
     }
 }
 
@@ -620,24 +676,25 @@ body.light-theme .sidebar .collapse {
     border-left: 3px solid #4299e1;
 }
 
+/* 强制深色模式背景 */
 body.light-theme main,
 body.light-theme .card,
 body.light-theme .table,
 body.light-theme .table th,
 body.light-theme .table td {
-    background: #ffffff;
-    color: #1a202c;
+    background: #4a5568 !important;
+    color: #e2e8f0 !important;
 }
 
 body.light-theme .table-hover tbody tr:hover {
-    background: #e2e8f0;
-    color: #1a202c;
+    background: #63b3ed !important;
+    color: #1a202c !important;
 }
 
 body.light-theme .card-title,
 body.light-theme .modal-header,
 body.light-theme .modal-body {
-    color: #1a202c;
+    color: #ffffff !important;
 }
 
 body.light-theme .login-container {
@@ -677,7 +734,7 @@ body.light-theme .text-gray-600 {
 
 /* 浅色模式下的查询结果标题 */
 body.light-theme .page-title {
-    color: #1a202c !important;
+    color: #ffffff !important; /* 强制白色 */
 }
 
 /* 动态文字颜色 */
@@ -694,5 +751,5 @@ body.light-theme .text-white {
 }
 
 body.light-theme .dark:text-gray-800 {
-    color: #1a202c; /* 浅色模式为深灰 */
+    color: #ffffff !important; /* 强制白色 */
 }

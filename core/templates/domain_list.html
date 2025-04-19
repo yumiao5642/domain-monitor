@@ -1,4 +1,4 @@
-i{% extends 'base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 {% block title %}域名管理 - 域名监控系统{% endblock %}
 {% block nav_title %}域名管理{% endblock %}
@@ -117,7 +117,7 @@ i{% extends 'base.html' %}
                     </select>
                     <button type="button" class="btn btn-primary ml-2" id="bulk_action_btn">执行</button>
                 </div>
-                <div class="mb-2">
+                <div class="pagination-section mb-2">
                     <span class="mr-2">第 {{ page_obj.number }} 页（共 {{ page_obj.paginator.num_pages }} 页）</span>
                     <select id="per_page_select" name="per_page" class="form-control d-inline-block" style="width: auto;">
                         <option value="20" {% if per_page == 20 %}selected{% endif %}>20</option>
