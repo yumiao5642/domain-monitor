@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.core.paginator import Paginator
 from .models import Domain
 from .utils import get_domain_stats, format_interval
+from datetime import datetime
 
 @login_required
 def dashboard(request):
@@ -92,6 +93,18 @@ def domain_form(request, domain_id=None):
                     end_time = None
             else:
                 end_time = None
+
+            # 检查域名是否已存在（仅在添加新域名时检查）
+            if not domain_id:
+                existing_domains = Domain.objects.filter(user=request.user, domain_name__in=domain_names)
+                if existing_domains.exists():
+                    messages.error(request, '该监控对象已添加！')
+                    groups = Domain.objects.filter(user=request.user).values_list('group', flat=True).distinct()
+                    return render(request, 'domain_form.html', {
+                        'domain': domain,
+                        'groups': groups,
+                        'error': '该监控对象已添加！'
+                    })
 
             if domain:
                 domain.domain_name = domain_names[0]

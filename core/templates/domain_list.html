@@ -5,13 +5,16 @@
 {% block content %}
 <div class="mb-2">
     <!-- 查询表单 -->
-    <form method="get" class="mt-1 d-flex justify-content-start">
+    <form method="get" class="mt-1 d-flex justify-content-between align-items-start">
+        <div class="d-flex align-items-start">
+            <a href="{% url 'domain_form' %}" class="btn btn-primary mb-1"><i class="fas fa-plus mr-1"></i>添加</a>
+        </div>
         <div class="d-flex flex-wrap align-items-center">
             <div class="mr-1 mb-1" style="width: 25%; max-width: 90px;">
                 <input type="text" class="form-control" id="name" name="name" placeholder="名称" value="{{ name }}">
             </div>
-            <div class="mr-1 mb-1" style="width: 25%; max-width: 90px;">
-                <input type="text" class="form-control" id="domain_name" name="domain_name" placeholder="域名" value="{{ domain_name }}">
+            <div class="mr-1 mb-1" style="width: 24px;" id="domain_name">
+                <input type="text" class="form-control" id="domain_name_input" name="domain_name" placeholder="监控对象" value="{{ domain_name }}">
             </div>
             <div class="mr-1 mb-1" style="width: 25%; max-width: 90px;">
                 <select class="form-control" id="group" name="group" style="width: 100%;">
@@ -24,7 +27,6 @@
             </div>
             <div class="d-flex align-items-end mb-1">
                 <button type="submit" class="btn btn-primary mr-1"><i class="fas fa-search mr-1"></i>查询</button>
-                <a href="{% url 'domain_form' %}" class="btn btn-primary"><i class="fas fa-plus mr-1"></i>添加</a>
             </div>
         </div>
     </form>
@@ -38,7 +40,7 @@
                     <tr>
                         <th><input type="checkbox" id="select_all"></th>
                         <th>名称</th>
-                        <th>域名</th>
+                        <th>监控对象</th>
                         <th>分组</th>
                         <th>频率</th>
                         <th>域名到期</th>
@@ -108,7 +110,7 @@
                 </tbody>
             </table>
             <div class="d-flex justify-content-between align-items-center flex-wrap">
-                <div class="mb-2">
+                <div class="bulk-action-section mb-2">
                     <select id="bulk_action_select" name="bulk_action" class="form-control d-inline-block" style="width: auto;">
                         <option value="">批量操作</option>
                         <option value="enable">批量开启</option>
@@ -202,7 +204,7 @@ $(document).ready(function() {
         }, 3000);
     });
 
-    // 动态截断名称和域名
+    // 动态截断名称和监控对象
     function truncateText() {
         var maxWidth = $(window).width() > 1200 ? 200 : ($(window).width() > 768 ? 150 : 100);
         $('.truncate-name, .truncate-domain').each(function() {

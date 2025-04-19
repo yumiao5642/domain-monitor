@@ -160,7 +160,6 @@ body {
 }
 
 /* 内容区域 */
-/* 内容区域 */
 main {
     margin-left: 153px; /* 左侧菜单 150px + 空隙 3px */
     margin-top: 59px; /* 导航栏 56px + 空隙 3px */
@@ -200,7 +199,6 @@ main {
     border: none;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    transition: transform 0.3s ease;
     margin: 0 auto;
     max-width: 100%; /* 确保适配屏幕 */
 }
@@ -212,8 +210,9 @@ main {
     }
 }
 
+/* 移除卡片悬浮效果 */
 .card:hover {
-    transform: translateY(-5px);
+    transform: none; /* 移除向上移动效果 */
 }
 
 .card-title {
@@ -261,7 +260,7 @@ main {
     text-overflow: ellipsis;
 }
 
-.table th:nth-child(3), .table td:nth-child(3) { /* 域名 */
+.table th:nth-child(3), .table td:nth-child(3) { /* 监控对象 */
     max-width: 15%;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -306,6 +305,9 @@ main {
 
 .table th:nth-child(13), .table td:nth-child(13) { /* 操作 */
     width: 18%;
+    display: flex;
+    justify-content: center; /* 水平居中 */
+    align-items: center; /* 垂直居中 */
 }
 
 /* 自适应表格 */
@@ -313,7 +315,7 @@ main {
     .table th:nth-child(2), .table td:nth-child(2) { /* 名称 */
         max-width: 12%;
     }
-    .table th:nth-child(3), .table td:nth-child(3) { /* 域名 */
+    .table th:nth-child(3), .table td:nth-child(3) { /* 监控对象 */
         max-width: 12%;
     }
     .table th:nth-child(13), .table td:nth-child(13) { /* 操作 */
@@ -325,7 +327,7 @@ main {
     .table th:nth-child(2), .table td:nth-child(2) { /* 名称 */
         max-width: 10%;
     }
-    .table th:nth-child(3), .table td:nth-child(3) { /* 域名 */
+    .table th:nth-child(3), .table td:nth-child(3) { /* 监控对象 */
         max-width: 10%;
     }
     .table th:nth-child(13), .table td:nth-child(13) { /* 操作 */
@@ -343,9 +345,23 @@ main {
     font-size: 0.7rem; /* 缩小字体 */
 }
 
+/* 表格行悬浮效果 */
+.table-hover tbody tr {
+    position: relative; /* 为伪元素定位 */
+}
+
 .table-hover tbody tr:hover {
-    background: #63b3ed;
-    color: #1a202c;
+    background: none; /* 移除整体背景色 */
+}
+
+.table-hover tbody tr:hover::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 5px; /* 右侧5px宽的蓝色条 */
+    height: 100%;
+    background: #63b3ed; /* 蓝色 */
 }
 
 /* 复制按钮提示泡泡 */
@@ -367,13 +383,12 @@ main {
     border: none;
     border-radius: 8px;
     padding: 6px 12px; /* 缩小按钮 */
-    transition: background 0.3s ease, transform 0.2s ease;
+    transition: background 0.3s ease;
     font-size: 0.85rem; /* 按钮字体 */
 }
 
 .btn-primary:hover {
     background: #4299e1;
-    transform: scale(1.05);
 }
 
 /* 自适应按钮 */
@@ -401,11 +416,24 @@ main {
     color: #a0aec0; /* 浅色占位符 */
 }
 
+/* 分组占位符颜色 */
+#group option[value=""] {
+    color: #a0aec0; /* 灰色 */
+}
+
+/* 域名输入框宽度 */
+#domain_name {
+    width: 24px !important;
+}
+
 /* 自适应查询表单 */
 @media (max-width: 768px) {
     .form-control {
         font-size: 0.75rem;
         padding: 0.25rem 0.5rem;
+    }
+    #domain_name {
+        width: 24px !important;
     }
 }
 
@@ -415,6 +443,8 @@ main {
     align-items: center;
     justify-content: flex-end;
     gap: 10px;
+    font-size: 12.5px; /* 调整字体大小 */
+    height: 30px; /* 调整高度 */
 }
 
 @media (max-width: 768px) {
@@ -422,7 +452,16 @@ main {
         flex-direction: column;
         align-items: flex-end;
         gap: 5px;
+        height: auto;
     }
+}
+
+/* 批量操作区域 */
+.bulk-action-section {
+    font-size: 12.5px; /* 调整字体大小 */
+    height: 30px; /* 调整高度 */
+    display: flex;
+    align-items: center;
 }
 
 /* 添加/编辑域名页面字体 */
@@ -432,6 +471,18 @@ main {
 #domain_form span,
 #domain_form h5 {
     font-size: 0.85rem; /* 与查询结果区域一致 */
+}
+
+/* 调整勾选框文字居中 */
+#domain_form .custom-control {
+    display: flex;
+    align-items: center; /* 垂直居中 */
+}
+
+#domain_form .custom-control-label {
+    padding-left: 0.5rem;
+    font-size: 0.85rem;
+    line-height: 1.5; /* 调整行高以居中 */
 }
 
 /* 自适应表单 */
@@ -445,6 +496,22 @@ main {
     #domain_form span,
     #domain_form h5 {
         font-size: 0.75rem;
+    }
+    #domain_form .custom-control-label {
+        font-size: 0.75rem;
+        line-height: 1.2;
+    }
+}
+
+/* 调整分组对话框宽度 */
+#createGroupModal .modal-dialog {
+    max-width: 240px; /* 当前宽度400px的60% */
+}
+
+/* 自适应模态框 */
+@media (max-width: 576px) {
+    #createGroupModal .modal-dialog {
+        max-width: 80%;
     }
 }
 
@@ -549,7 +616,11 @@ textarea#domain_name {
     padding: 2rem;
     width: 100%;
     max-width: 400px;
-    transition: transform 0.3s ease;
+}
+
+/* 移除登录卡片悬浮效果 */
+.login-card:hover {
+    transform: none; /* 移除向上移动效果 */
 }
 
 /* 自适应登录卡片 */
@@ -558,10 +629,6 @@ textarea#domain_name {
         padding: 1.5rem;
         max-width: 90%;
     }
-}
-
-.login-card:hover {
-    transform: translateY(-5px);
 }
 
 .login-card input {
@@ -581,12 +648,11 @@ textarea#domain_name {
     border-radius: 8px;
     padding: 0.75rem;
     font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: background-color 0.3s ease;
 }
 
 .login-card button:hover {
     background-color: #4299e1;
-    transform: scale(1.05);
 }
 
 /* 表单和模态框 */
@@ -687,8 +753,7 @@ body.light-theme .table td {
 }
 
 body.light-theme .table-hover tbody tr:hover {
-    background: #63b3ed !important;
-    color: #1a202c !important;
+    background: none !important;
 }
 
 body.light-theme .card-title,

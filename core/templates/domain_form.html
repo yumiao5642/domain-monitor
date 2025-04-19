@@ -23,12 +23,12 @@
                     <div class="form-group row mb-3">
                         <label for="task_name" class="col-sm-2 col-form-label dark:text-gray-800"><i class="fas fa-tasks mr-2"></i>任务名称</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="task_name" name="task_name" maxlength="20" style="width: 100%; max-width: 200px;" value="{{ domain.task_name|default:'' }}" required>
+                            <input type="text" class="form-control" id="task_name" name="task_name" maxlength="20" style="width: 100%; max-width: 160px;" value="{{ domain.task_name|default:'' }}" required>
                         </div>
                     </div>
-                    <!-- 域名 -->
+                    <!-- 监控对象 -->
                     <div class="form-group row mb-3">
-                        <label for="domain_name" class="col-sm-2 col-form-label dark:text-gray-800"><i class="fas fa-globe mr-2"></i>域名</label>
+                        <label for="domain_name" class="col-sm-2 col-form-label dark:text-gray-800"><i class="fas fa-globe mr-2"></i>监控对象</label>
                         <div class="col-sm-10 d-flex align-items-center">
                             <input type="text" class="form-control mr-2" id="domain_name" name="domain_name" maxlength="200" style="width: 100%; max-width: 200px;" value="{{ domain.domain_name|default:'' }}" required>
                             <button type="button" class="btn btn-primary" id="bulk_add_btn"><i class="fas fa-plus-square mr-2"></i>批量添加</button>
@@ -98,7 +98,7 @@
                         <div class="col-sm-2"></div>
                         <div class="col-sm-10">
                             <div class="custom-control custom-checkbox mb-2 d-flex align-items-center">
-                                <input type="checkbox" class="custom-control-input" id="notify_telegram" name="notify_telegram" {% if domain.notify_telegram|default:False %}checked{% endif %}>
+                                <input type="checkbox" class="custom-control-input" id="notify_telegram" name="notify_telegram" {% if domain.notify_telegram|default:True %}checked{% endif %}>
                                 <label class="custom-control-label dark:text-gray-800 ml-2" for="notify_telegram"><i class="fab fa-telegram mr-2"></i>Telegram</label>
                             </div>
                             <div class="custom-control custom-checkbox mb-2 d-flex align-items-center">
@@ -173,7 +173,7 @@ $(document).ready(function() {
     });
     $('#domain_name').on('input', function() {
         if ($(this).val().length > 200) {
-            alert('域名超过长度限制：200字符');
+            alert('监控对象超过长度限制：200字符');
             $(this).val($(this).val().slice(0, 200));
         }
     });
@@ -199,7 +199,7 @@ $(document).ready(function() {
         if ($domain_input.is('input')) {
             // 切换为 textarea
             $domain_input.replaceWith(`
-                <textarea class="form-control mr-2" id="domain_name" name="domain_name" rows="4" style="width: 100%; max-width: 300px;" placeholder="每行一个域名。"></textarea>
+                <textarea class="form-control mr-2" id="domain_name" name="domain_name" rows="4" style="width: 100%; max-width: 300px;" placeholder="每行一个监控对象。"></textarea>
             `);
             $(this).text('单行添加');
         } else {
@@ -221,16 +221,20 @@ $(document).ready(function() {
     });
 
     // 新建分组
+    $('#create_group_btn').click(function() {
+        $('#createGroupModal').modal('show');
+    });
+
     $('#create-group-form').on('submit', function(e) {
         e.preventDefault();
         var group_name = $('#new-group-name').val().trim();
-        if (group_name !== '') {
+        if (group_name && group_name.trim() !== '') {
             if (group_name.length > 20) {
                 alert('分组名称超过长度限制：20字符');
                 return;
             }
             var $group_select = $('#group');
-            $group_select.append(new Option(group_name, group_name, true, true));
+            $group_select.append(new Option(group_name.trim(), group_name.trim(), true, true));
             $('#createGroupModal').modal('hide');
             $('#new-group-name').val('');
         }
