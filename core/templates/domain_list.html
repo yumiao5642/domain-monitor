@@ -5,20 +5,20 @@
 {% block content %}
 <div class="mb-2">
     <!-- 查询表单 -->
-    <form method="get" class="mt-1 d-flex justify-content-between align-items-start">
+    <form method="get" class="mt-1 d-flex justify-content-between align-items-start" style="flex-wrap: nowrap;">
         <div class="d-flex align-items-start">
-            <a href="{% url 'domain_form' %}" class="btn btn-primary mb-1"><i class="fas fa-plus mr-1"></i>添加</a>
+            <a href="{% url 'domain_form' %}" class="btn btn-primary mb-1 add-btn" style="margin-left: calc(0% + 40px);"><i class="fas fa-plus mr-1"></i>添加</a>
         </div>
-        <div class="d-flex flex-wrap align-items-center">
-            <div class="mr-1 mb-1" style="width: 25%; max-width: 90px;">
+        <div class="d-flex align-items-center" style="margin-right: 60px; flex-wrap: nowrap;">
+            <div class="mr-1 mb-1" style="width: 25%; max-width: 70px;">
                 <input type="text" class="form-control" id="name" name="name" placeholder="名称" value="{{ name }}">
             </div>
-            <div class="mr-1 mb-1" style="width: 24px;" id="domain_name">
+            <div class="mr-1 mb-1" style="width: 25%; max-width: 175px;" id="domain_name">
                 <input type="text" class="form-control" id="domain_name_input" name="domain_name" placeholder="监控对象" value="{{ domain_name }}">
             </div>
-            <div class="mr-1 mb-1" style="width: 25%; max-width: 90px;">
+            <div class="mr-1 mb-1" style="width: 25%; max-width: 70px;">
                 <select class="form-control" id="group" name="group" style="width: 100%;">
-                    <option value="">分组</option>
+                    <option value="分组" selected>分组</option>
                     {% for group_name in groups %}
                     <option value="{{ group_name }}" {% if group_name == group %}selected{% endif %}>{{ group_name }}</option>
                     {% endfor %}
@@ -38,19 +38,20 @@
             <table class="table table-hover text-center">
                 <thead>
                     <tr>
-                        <th><input type="checkbox" id="select_all"></th>
-                        <th>名称</th>
-                        <th>监控对象</th>
-                        <th>分组</th>
-                        <th>频率</th>
-                        <th>域名到期</th>
-                        <th>证书到期</th>
-                        <th>网站监控</th>
-                        <th>可用率</th>
-                        <th>创建时间</th>
-                        <th>检测时间</th>
-                        <th>响应速度</th>
-                        <th>操作</th>
+                        <th data-col="0"><input type="checkbox" id="select_all"><span class="resize-handle"></span></th>
+                        <th data-col="1">名称<span class="resize-handle"></span></th>
+                        <th data-col="2">监控对象<span class="resize-handle"></span></th>
+                        <th data-col="3">分组<span class="resize-handle"></span></th>
+                        <th data-col="4">频率<span class="resize-handle"></span></th>
+                        <th data-col="5">域名到期<span class="resize-handle"></span></th>
+                        <th data-col="6">证书到期<span class="resize-handle"></span></th>
+                        <th data-col="7">网站监控<span class="resize-handle"></span></th>
+                        <th data-col="8">监控类型<span class="resize-handle"></span></th>
+                        <th data-col="9">可用率<span class="resize-handle"></span></th>
+                        <th data-col="10">创建时间<span class="resize-handle"></span></th>
+                        <th data-col="11">检测时间<span class="resize-handle"></span></th>
+                        <th data-col="12">响应速度<span class="resize-handle"></span></th>
+                        <th data-col="13">操作<span class="resize-handle"></span></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -61,7 +62,7 @@
                         <td class="truncate-name">{{ domain.task_name }}</td>
                         <td class="truncate-domain text-left">
                             <a href="https://{{ domain.domain_name }}" target="_blank">{{ domain.domain_name }}</a>
-                            <button class="btn btn-sm btn-outline-secondary ml-1 copy-btn" data-clipboard-text="{{ domain.domain_name }}"><i class="fas fa-copy"></i></button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary ml-1 copy-btn" data-clipboard-text="{{ domain.domain_name }}"><i class="fas fa-copy"></i></button>
                             <span class="copy-tooltip">已复制</span>
                         </td>
                         <td>{{ domain.group|default:'无' }}</td>
@@ -78,7 +79,7 @@
                             <span class="mr-1 {% if domain.check_cert %}text-success{% else %}text-secondary{% endif %}">
                                 {% if domain.check_cert %}开启中{% else %}已关闭{% endif %}
                             </span>
-                            <a href="{% url 'toggle_monitor' domain.id 'cert' %}" class="btn btn-sm {% if domain.check_cert %}btn-secondary{% else %}btn-success{% endif %}">
+                            <a href="{% url 'toggle_monitor' domain.id 'cert' %}" class="btn btn-sm {% if domain.check_cert %}btn-secondary{% else %}btn-success{% endif %} {% if domain.monitor_type == 'http' %}disabled{% endif %}" {% if domain.monitor_type == 'http' %}onclick="return false;"{% endif %}>
                                 {% if domain.check_cert %}关{% else %}开{% endif %}
                             </a>
                         </td>
@@ -90,6 +91,7 @@
                                 {% if domain.check_https %}关{% else %}开{% endif %}
                             </a>
                         </td>
+                        <td>{{ domain.monitor_type|upper }}</td>
                         <td>{{ data.availability }}%</td>
                         <td>{{ domain.create_time|date:"Y-m-d H:i:s" }}</td>
                         <td>{{ data.last_check_time|date:"Y-m-d H:i:s"|default:'无' }}</td>
@@ -104,29 +106,31 @@
                     {% endwith %}
                     {% empty %}
                     <tr>
-                        <td colspan="13" class="text-center text-gray-600">暂无域名数据</td>
+                        <td colspan="14" class="text-center text-gray-600">暂无域名数据</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
             <div class="d-flex justify-content-between align-items-center flex-wrap">
                 <div class="bulk-action-section mb-2">
-                    <select id="bulk_action_select" name="bulk_action" class="form-control d-inline-block" style="width: auto;">
+                    <select id="bulk_action_select" name="bulk_action" class="form-control d-inline-block pagination-select" style="width: auto;">
                         <option value="">批量操作</option>
                         <option value="enable">批量开启</option>
                         <option value="disable">批量关闭</option>
                         <option value="delete">批量删除</option>
                     </select>
-                    <button type="button" class="btn btn-primary ml-2" id="bulk_action_btn">执行</button>
+                    <button type="button" class="btn btn-primary ml-2 execute-btn" id="bulk_action_btn">执行</button>
                 </div>
                 <div class="pagination-section mb-2">
-                    <span class="mr-2">第 {{ page_obj.number }} 页（共 {{ page_obj.paginator.num_pages }} 页）</span>
-                    <select id="per_page_select" name="per_page" class="form-control d-inline-block" style="width: auto;">
+                    <span class="mr-2">每页</span>
+                    <select id="per_page_select" name="per_page" class="form-control d-inline-block pagination-select" style="width: auto;">
                         <option value="20" {% if per_page == 20 %}selected{% endif %}>20</option>
                         <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
                         <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
                         <option value="200" {% if per_page == 200 %}selected{% endif %}>200</option>
                     </select>
+                    <span class="mr-2 ml-2">条</span>
+                    <span class="mr-2">第 {{ page_obj.number }} 页（共 {{ page_obj.paginator.num_pages }} 页）</span>
                     <div class="d-inline-block">
                         {% if page_obj.has_previous %}
                         <a href="?page={{ page_obj.previous_page_number }}&name={{ name }}&domain_name={{ domain_name }}&group={{ group }}&per_page={{ per_page }}" class="btn btn-primary btn-sm">上一页</a>
@@ -185,6 +189,7 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js"></script>
 <script>
+// 动态调整表格列宽
 $(document).ready(function() {
     // 初始化 Clipboard.js
     var clipboard = new ClipboardJS('.copy-btn');
@@ -254,7 +259,7 @@ $(document).ready(function() {
     $('#group').on('change', function() {
         if ($(this).val() === 'new_group') {
             $('#createGroupModal').modal('show');
-            $(this).val('');
+            $(this).val('分组');
         }
     });
 
@@ -267,7 +272,7 @@ $(document).ready(function() {
                 return;
             }
             var $group_select = $('#group');
-            $group_select.find('option[value=""]').after(new Option(group_name, group_name, true, true));
+            $group_select.find('option[value="分组"]').after(new Option(group_name, group_name, true, true));
             $('#createGroupModal').modal('hide');
             $('#new-group-name').val('');
         }
@@ -300,6 +305,62 @@ $(document).ready(function() {
         $('#bulk_action_form').attr('action', '{% url "bulk_action" %}');
         $('#bulk_action_form').submit();
     });
+
+    // 表格列宽拖动功能（优化）
+    let isResizing = false;
+    let startX = 0;
+    let startWidth = 0;
+    let currentTh = null;
+
+    // 加载保存的列宽
+    function loadColumnWidths() {
+        $('.table th').each(function() {
+            const colIndex = $(this).data('col');
+            const savedWidth = localStorage.getItem(`column-width-${colIndex}`);
+            if (savedWidth) {
+                $(this).css('width', savedWidth);
+                $(`.table td:nth-child(${parseInt(colIndex) + 1})`).css('width', savedWidth);
+            }
+        });
+    }
+
+    // 保存列宽
+    function saveColumnWidth(colIndex, width) {
+        localStorage.setItem(`column-width-${colIndex}`, width);
+    }
+
+    // 初始化时加载保存的列宽
+    loadColumnWidths();
+
+    // 拖动功能
+    $('.table th .resize-handle').on('mousedown', function(e) {
+        isResizing = true;
+        startX = e.pageX;
+        currentTh = $(this).parent();
+        startWidth = currentTh.width();
+        $(document).on('mousemove.resize', resizeColumn);
+        $(document).on('mouseup.resize', stopResize);
+        e.preventDefault(); // 防止文本选择
+    });
+
+    function resizeColumn(e) {
+        if (isResizing && currentTh) {
+            const diff = e.pageX - startX;
+            const newWidth = Math.max(50, startWidth + diff); // 最小宽度50px
+            const colIndex = currentTh.data('col');
+            $(`.table th[data-col="${colIndex}"], .table td:nth-child(${parseInt(colIndex) + 1})`).css('width', newWidth + 'px');
+            saveColumnWidth(colIndex, newWidth + 'px'); // 保存新宽度
+        }
+    }
+
+    function stopResize() {
+        if (isResizing) {
+            isResizing = false;
+            currentTh = null;
+            $(document).off('mousemove.resize');
+            $(document).off('mouseup.resize');
+        }
+    }
 });
 </script>
 {% endblock %}

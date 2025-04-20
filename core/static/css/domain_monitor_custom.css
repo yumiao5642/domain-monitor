@@ -228,10 +228,10 @@ main {
 .table {
     background: #4a5568;
     border-radius: 8px;
-    overflow: hidden;
+    overflow-x: auto; /* 允许水平滚动 */
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
     width: 100%;
-    table-layout: fixed; /* 固定表格布局 */
+    table-layout: auto; /* 自动分配宽度 */
 }
 
 .table th,
@@ -248,20 +248,31 @@ main {
 .table th {
     background: #2d3748;
     color: #ffffff; /* 更亮的白色 */
+    border-right: 1px solid #a0aec0; /* 添加分隔线 */
+    cursor: ew-resize; /* 可拖动光标 */
+}
+
+.table th:last-child {
+    border-right: none; /* 最后一列无分隔线 */
 }
 
 .table th:nth-child(1), .table td:nth-child(1) { /* 勾选框 */
     width: 5%;
+    min-width: 40px;
 }
 
 .table th:nth-child(2), .table td:nth-child(2) { /* 名称 */
-    max-width: 15%;
+    width: 8%; /* 调整为更平均的分配 */
+    min-width: 80px;
+    max-width: 120px;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .table th:nth-child(3), .table td:nth-child(3) { /* 监控对象 */
-    max-width: 15%;
+    width: 12%; /* 调整为更平均的分配 */
+    min-width: 160px;
+    max-width: 180px;
     overflow: hidden;
     text-overflow: ellipsis;
     text-align: left; /* 居左 */
@@ -269,42 +280,52 @@ main {
 
 .table th:nth-child(4), .table td:nth-child(4) { /* 分组 */
     width: 8%;
+    min-width: 60px;
 }
 
 .table th:nth-child(5), .table td:nth-child(5) { /* 频率 */
     width: 8%;
+    min-width: 60px;
 }
 
 .table th:nth-child(6), .table td:nth-child(6) { /* 域名到期 */
     width: 10%;
+    min-width: 90px;
 }
 
 .table th:nth-child(7), .table td:nth-child(7) { /* 证书到期 */
     width: 10%;
+    min-width: 90px;
 }
 
 .table th:nth-child(8), .table td:nth-child(8) { /* 网站监控 */
     width: 10%;
+    min-width: 90px;
 }
 
 .table th:nth-child(9), .table td:nth-child(9) { /* 可用率 */
     width: 8%;
+    min-width: 60px;
 }
 
 .table th:nth-child(10), .table td:nth-child(10) { /* 创建时间 */
-    width: 10%;
+    width: 12%;
+    min-width: 110px;
 }
 
 .table th:nth-child(11), .table td:nth-child(11) { /* 检测时间 */
-    width: 10%;
+    width: 12%;
+    min-width: 110px;
 }
 
 .table th:nth-child(12), .table td:nth-child(12) { /* 响应速度 */
     width: 8%;
+    min-width: 60px;
 }
 
 .table th:nth-child(13), .table td:nth-child(13) { /* 操作 */
-    width: 18%;
+    width: 15%;
+    min-width: 150px;
     display: flex;
     justify-content: center; /* 水平居中 */
     align-items: center; /* 垂直居中 */
@@ -313,25 +334,89 @@ main {
 /* 自适应表格 */
 @media (max-width: 1200px) {
     .table th:nth-child(2), .table td:nth-child(2) { /* 名称 */
-        max-width: 12%;
+        width: 6%;
+        min-width: 70px;
+        max-width: 100px;
     }
     .table th:nth-child(3), .table td:nth-child(3) { /* 监控对象 */
-        max-width: 12%;
+        width: 10%;
+        min-width: 140px;
+        max-width: 160px;
+    }
+    .table th:nth-child(4), .table td:nth-child(4) { /* 分组 */
+        width: 50px;
+    }
+    .table th:nth-child(5), .table td:nth-child(5) { /* 频率 */
+        width: 50px;
+    }
+    .table th:nth-child(6), .table td:nth-child(6) { /* 域名到期 */
+        width: 80px;
+    }
+    .table th:nth-child(7), .table td:nth-child(7) { /* 证书到期 */
+        width: 80px;
+    }
+    .table th:nth-child(8), .table td:nth-child(8) { /* 网站监控 */
+        width: 80px;
+    }
+    .table th:nth-child(9), .table td:nth-child(9) { /* 可用率 */
+        width: 50px;
+    }
+    .table th:nth-child(10), .table td:nth-child(10) { /* 创建时间 */
+        width: 100px;
+    }
+    .table th:nth-child(11), .table td:nth-child(11) { /* 检测时间 */
+        width: 100px;
+    }
+    .table th:nth-child(12), .table td:nth-child(12) { /* 响应速度 */
+        width: 50px;
     }
     .table th:nth-child(13), .table td:nth-child(13) { /* 操作 */
-        width: 20%;
+        width: 140px;
+        min-width: 140px;
     }
 }
 
 @media (max-width: 768px) {
     .table th:nth-child(2), .table td:nth-child(2) { /* 名称 */
-        max-width: 10%;
+        width: 5%;
+        min-width: 60px;
+        max-width: 80px;
     }
     .table th:nth-child(3), .table td:nth-child(3) { /* 监控对象 */
-        max-width: 10%;
+        width: 8%;
+        min-width: 120px;
+        max-width: 140px;
+    }
+    .table th:nth-child(4), .table td:nth-child(4) { /* 分组 */
+        width: 40px;
+    }
+    .table th:nth-child(5), .table td:nth-child(5) { /* 频率 */
+        width: 40px;
+    }
+    .table th:nth-child(6), .table td:nth-child(6) { /* 域名到期 */
+        width: 70px;
+    }
+    .table th:nth-child(7), .table td:nth-child(7) { /* 证书到期 */
+        width: 70px;
+    }
+    .table th:nth-child(8), .table td:nth-child(8) { /* 网站监控 */
+        width: 70px;
+    }
+    .table th:nth-child(9), .table td:nth-child(9) { /* 可用率 */
+        width: 40px;
+    }
+    .table th:nth-child(10), .table td:nth-child(10) { /* 创建时间 */
+        width: 90px;
+    }
+    .table th:nth-child(11), .table td:nth-child(11) { /* 检测时间 */
+        width: 90px;
+    }
+    .table th:nth-child(12), .table td:nth-child(12) { /* 响应速度 */
+        width: 40px;
     }
     .table th:nth-child(13), .table td:nth-child(13) { /* 操作 */
-        width: 22%;
+        width: 130px;
+        min-width: 130px;
     }
     .table th, .table td {
         font-size: 0.75rem;
@@ -382,13 +467,26 @@ main {
     background: #63b3ed;
     border: none;
     border-radius: 8px;
-    padding: 6px 12px; /* 缩小按钮 */
+    padding: 6px 12px; /* 统一按钮内边距 */
     transition: background 0.3s ease;
-    font-size: 0.85rem; /* 按钮字体 */
+    font-size: 0.85rem; /* 统一按钮字体 */
+    line-height: 1; /* 防止换行 */
 }
 
 .btn-primary:hover {
     background: #4299e1;
+}
+
+/* 添加按钮样式 */
+.add-btn {
+    white-space: nowrap; /* 防止换行 */
+    font-size: 0.85rem; /* 调整字体大小 */
+    padding: 8px 12px; /* 调整内边距 */
+}
+
+/* “执行”按钮样式 */
+.execute-btn {
+    font-size: 0.65rem !important; /* 调整文字大小 */
 }
 
 /* 自适应按钮 */
@@ -396,6 +494,13 @@ main {
     .btn-primary {
         padding: 4px 8px;
         font-size: 0.75rem;
+    }
+    .add-btn {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+    }
+    .execute-btn {
+        font-size: 0.55rem !important;
     }
 }
 
@@ -417,13 +522,14 @@ main {
 }
 
 /* 分组占位符颜色 */
-#group option[value=""] {
+#group option[value="分组"] {
     color: #a0aec0; /* 灰色 */
 }
 
-/* 域名输入框宽度 */
+/* 监控对象输入框宽度 */
 #domain_name {
-    width: 24px !important;
+    max-width: 175px !important;
+    width: 100% !important;
 }
 
 /* 自适应查询表单 */
@@ -433,7 +539,7 @@ main {
         padding: 0.25rem 0.5rem;
     }
     #domain_name {
-        width: 24px !important;
+        max-width: 175px !important;
     }
 }
 
@@ -443,8 +549,8 @@ main {
     align-items: center;
     justify-content: flex-end;
     gap: 10px;
-    font-size: 12.5px; /* 调整字体大小 */
-    height: 30px; /* 调整高度 */
+    font-size: 0.85rem !important; /* 确保优先级 */
+    height: 20px; /* 调整高度 */
 }
 
 @media (max-width: 768px) {
@@ -458,10 +564,24 @@ main {
 
 /* 批量操作区域 */
 .bulk-action-section {
-    font-size: 12.5px; /* 调整字体大小 */
-    height: 30px; /* 调整高度 */
+    font-size: 0.85rem !important; /* 确保优先级 */
+    height: 20px; /* 调整高度 */
     display: flex;
     align-items: center;
+}
+
+/* 页角选项框 */
+.pagination-section .pagination-select,
+.bulk-action-section .pagination-select {
+    font-size: 0.65rem !important; /* 调整为 0.65rem */
+}
+
+/* 自适应页角选项框 */
+@media (max-width: 768px) {
+    .pagination-section .pagination-select,
+    .bulk-action-section .pagination-select {
+        font-size: 0.55rem !important;
+    }
 }
 
 /* 添加/编辑域名页面字体 */
