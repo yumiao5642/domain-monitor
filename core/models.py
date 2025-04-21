@@ -27,9 +27,16 @@ class Domain(models.Model):
     domain_name = models.CharField(max_length=255, verbose_name='域名')
     task_name = models.CharField(max_length=100, verbose_name='任务名称')
     check_interval = models.IntegerField(verbose_name='检测频率（秒）')
-    check_domain = models.BooleanField(default=True, verbose_name='监控域名到期')
-    check_cert = models.BooleanField(default=True, verbose_name='监控证书到期')
-    check_https = models.BooleanField(default=True, verbose_name='监控网站状态')
+    monitor_type = models.CharField(
+        "监控类型", max_length=5,
+        choices=(("http", "HTTP"), ("https", "HTTPS")),
+        default="https"
+    )
+    request_method = models.CharField(
+        "请求方式", max_length=4,
+        choices=(("GET", "GET"), ("POST", "POST")),
+        default="GET"
+    )
     is_active = models.BooleanField(default=True, verbose_name='是否启用')  # 新增：是否启用监控
     create_time = models.DateTimeField(default=timezone.now, verbose_name='创建时间')
     next_check = models.DateTimeField(verbose_name='下次检测时间')
