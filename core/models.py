@@ -2,6 +2,10 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 import pytz
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from datetime import datetime
 
 # 用户模型，支持多角色和多因素认证（MFA）
 class User(AbstractUser):
@@ -43,9 +47,9 @@ class Domain(models.Model):
     request_method = models.CharField(max_length=10, default='GET', choices=[('GET', 'GET'), ('POST', 'POST')], verbose_name='请求方式')
 
     class Meta:
-        db_table = 'domain'
-        verbose_name = '域名'
-        verbose_name_plural = '域名'
+        db_table = 'monitors'  # 将 'domain' 改为 'monitors'
+        verbose_name = '监控对象'
+        verbose_name_plural = '监控对象'
 
 # 证书信息表
 class Certificate(models.Model):
@@ -92,9 +96,9 @@ class WebsiteMonitorResult(models.Model):
     details = models.TextField(verbose_name='检测详情')
 
     class Meta:
-        db_table = 'website_monitor_result'
-        verbose_name = '网站监控结果'
-        verbose_name_plural = '网站监控结果'
+        db_table = 'monitor_logs'  # 将 'website_monitor_result' 改为 'monitor_logs'
+        verbose_name = '监控日志'
+        verbose_name_plural = '监控日志'
 
 # 告警配置表
 class AlertConfig(models.Model):
@@ -117,3 +121,68 @@ class OperationLog(models.Model):
         db_table = 'operation_log'
         verbose_name = '操作日志'
         verbose_name_plural = '操作日志'
+
+@login_required
+def domain_form(request, domain_id=None):
+    domain = None
+    if domain_id:
+        domain = Domain.objects.get(id=domain_id, user=request.user)
+
+    if request.method == 'POST':
+        try:
+            domain_input = request.POST.get('domain_name', '').strip()
+            domain_names = [name.strip() for name in domain_input.split('\n') if name.strip()] if '\n' in domain_input else [domain_input]
+            
+            # 获取表单数据
+            data = {
+                'task_name': request.POST.get('task_name', '').strip(),
+                'check_interval': int(request.POST.get('check_interval', 3600)),
+                'group': request.POST.get('group', '默认组').strip(),
+                'monitor_type': request.POST.get('monitor_type', 'https'),
+                'request_method': request.POST.get('request_method', 'GET'),
+                'response_time_threshold': int(request.POST.get('response_time_threshold', 1000)),
+                'alert_threshold': int(request.POST.get('alert_threshold', 3)),
+                'notify_telegram': 'notify_telegram' in request.POST,
+                'notify_email': 'notify_email' in request.POST,
+                'notify_inbox': 'notify_inbox' in request.POST,
+                'long_term_monitor': 'long_term_monitor' in request.POST,
+            }
+
+            # 处理结束时间
+            end_time = request.POST.get('end_time')
+            if end_time and not data['long_term_monitor']:
+                data['end_time'] = datetime.strptime(end_time, '%Y-%m-%d').date()
+            else:
+                data['end_time'] = None
+
+            # 检查域名是否已存在
+            if not domain_id:
+                if Domain.objects.filter(user=request.user, domain_name__in=domain_names).exists():
+                    raise ValueError('监控对象已存在！')
+
+            if domain:
+                # 更新现有记录
+                domain.domain_name = domain_names[0]
+                for key, value in data.items():
+                    setattr(domain, key, value)
+                domain.save()
+            else:
+                # 创建新记录
+                for domain_name in domain_names:
+                    Domain.objects.create(
+                        user=request.user,
+                        domain_name=domain_name,
+                        next_check=timezone.now(),
+                        **data
+                    )
+            
+            messages.success(request, '保存成功！')
+            return redirect('domain_list')
+            
+        except ValueError as e:
+            messages.error(request, str(e))
+        except Exception as e:
+            messages.error(request, f'保存失败：{str(e)}')
+            
+    groups = Domain.objects.filter(user=request.user).values_list('group', flat=True).distinct()
+    return render(request, 'domain_form.html', {'domain': domain, 'groups': groups})
