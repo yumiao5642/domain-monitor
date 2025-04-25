@@ -40,13 +40,54 @@
     <div class="sidebar">
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}" href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> <span>仪表板</span></a>
+                <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'dashboard' %}">
+                    <i class="fas fa-tachometer-alt mr-2"></i>控制台
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {% if request.path == '/domains/' %}active{% endif %}" href="{% url 'domain_list' %}"><i class="fas fa-globe"></i> <span>域名管理</span></a>
+                <a class="nav-link {% if 'domains' in request.path %}active{% endif %}" href="{% url 'domain_list' %}">
+                    <i class="fas fa-globe mr-2"></i>网站监控
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {% if request.path == '/alert-config/' %}active{% endif %}" href="{% url 'alert_config' %}"><i class="fas fa-bell"></i> <span>告警配置</span></a>
+                <a class="nav-link" href="#">
+                    <i class="fas fa-certificate mr-2"></i>证书监控
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-server mr-2"></i>域名监控
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-shopping-cart mr-2"></i>套餐管理
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-cogs mr-2"></i>系统管理
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-clipboard-list mr-2"></i>操作日志
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-history mr-2"></i>监控日志
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>告警日志
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-envelope mr-2"></i>消息管理
+                </a>
             </li>
         </ul>
     </div>

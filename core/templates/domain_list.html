@@ -38,20 +38,16 @@
             <table class="table table-hover text-center">
                 <thead>
                     <tr>
-                        <th data-col="0"><input type="checkbox" id="select_all"><span class="resize-handle"></span></th>
-                        <th data-col="1">名称<span class="resize-handle"></span></th>
-                        <th data-col="2">监控对象<span class="resize-handle"></span></th>
-                        <th data-col="3">分组<span class="resize-handle"></span></th>
-                        <th data-col="4">频率<span class="resize-handle"></span></th>
-                        <th data-col="5">域名到期<span class="resize-handle"></span></th>
-                        <th data-col="6">证书到期<span class="resize-handle"></span></th>
-                        <th data-col="7">网站监控<span class="resize-handle"></span></th>
-                        <th data-col="8">监控类型<span class="resize-handle"></span></th>
-                        <th data-col="9">可用率<span class="resize-handle"></span></th>
-                        <th data-col="10">创建时间<span class="resize-handle"></span></th>
-                        <th data-col="11">检测时间<span class="resize-handle"></span></th>
-                        <th data-col="12">响应速度<span class="resize-handle"></span></th>
-                        <th data-col="13">操作<span class="resize-handle"></span></th>
+                        <th><input type="checkbox" id="select_all"><span class="resize-handle"></span></th>
+                        <th>名称<span class="resize-handle"></span></th>
+                        <th>监控对象<span class="resize-handle"></span></th>
+                        <th>分组<span class="resize-handle"></span></th>
+                        <th>频率<span class="resize-handle"></span></th>
+                        <th>可用率<span class="resize-handle"></span></th>
+                        <th>创建时间<span class="resize-handle"></span></th>
+                        <th>上次检测时间<span class="resize-handle"></span></th>
+                        <th>响应速度<span class="resize-handle"></span></th>
+                        <th>操作<span class="resize-handle"></span></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -67,31 +63,6 @@
                         </td>
                         <td>{{ domain.group|default:'无' }}</td>
                         <td>{{ data.formatted_interval }}</td>
-                        <td>
-                            <span class="mr-1 {% if domain.check_domain %}text-success{% else %}text-secondary{% endif %}">
-                                {% if domain.check_domain %}开启中{% else %}已关闭{% endif %}
-                            </span>
-                            <a href="{% url 'toggle_monitor' domain.id 'domain' %}" class="btn btn-sm {% if domain.check_domain %}btn-secondary{% else %}btn-success{% endif %}">
-                                {% if domain.check_domain %}关{% else %}开{% endif %}
-                            </a>
-                        </td>
-                        <td>
-                            <span class="mr-1 {% if domain.check_cert %}text-success{% else %}text-secondary{% endif %}">
-                                {% if domain.check_cert %}开启中{% else %}已关闭{% endif %}
-                            </span>
-                            <a href="{% url 'toggle_monitor' domain.id 'cert' %}" class="btn btn-sm {% if domain.check_cert %}btn-secondary{% else %}btn-success{% endif %} {% if domain.monitor_type == 'http' %}disabled{% endif %}" {% if domain.monitor_type == 'http' %}onclick="return false;"{% endif %}>
-                                {% if domain.check_cert %}关{% else %}开{% endif %}
-                            </a>
-                        </td>
-                        <td>
-                            <span class="mr-1 {% if domain.check_https %}text-success{% else %}text-secondary{% endif %}">
-                                {% if domain.check_https %}开启中{% else %}已关闭{% endif %}
-                            </span>
-                            <a href="{% url 'toggle_monitor' domain.id 'https' %}" class="btn btn-sm {% if domain.check_https %}btn-secondary{% else %}btn-success{% endif %}">
-                                {% if domain.check_https %}关{% else %}开{% endif %}
-                            </a>
-                        </td>
-                        <td>{{ domain.monitor_type|upper }}</td>
                         <td>{{ data.availability }}%</td>
                         <td>{{ domain.create_time|date:"Y-m-d H:i:s" }}</td>
                         <td>{{ data.last_check_time|date:"Y-m-d H:i:s"|default:'无' }}</td>

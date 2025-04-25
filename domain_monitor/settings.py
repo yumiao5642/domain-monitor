@@ -53,7 +53,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'domain_monitor',
         'USER': 'dm_user',
-        'PASSWORD': '4r0rb0k1hkpy4f9inj5r',
+        'PASSWORD': '4rA0rb0k@1hkpy4r',
         'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {
