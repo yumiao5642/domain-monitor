@@ -55,7 +55,7 @@
                     {% with domain=data.domain %}
                     <tr>
                         <td><input type="checkbox" name="selected_domains" value="{{ domain.id }}" class="select_domain"></td>
-                        <td class="truncate-name">{{ domain.task_name }}</td>
+                        <td>{{ domain.task_name }}</td>
                         <td class="truncate-domain text-left">
                             <a href="https://{{ domain.domain_name }}" target="_blank">{{ domain.domain_name }}</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary ml-1 copy-btn" data-clipboard-text="{{ domain.domain_name }}"><i class="fas fa-copy"></i></button>
@@ -67,9 +67,7 @@
                         <td>{{ domain.create_time|date:"Y-m-d H:i:s" }}</td>
                         <td>{{ data.last_check_time|date:"Y-m-d H:i:s"|default:'无' }}</td>
                         <td>{{ data.last_response_time|default:'无' }}秒</td>
-                        <td class="d-flex justify-content-around">
-                            <a href="{% url 'toggle_all_monitors' domain.id 'on' %}" class="btn btn-sm btn-success">开</a>
-                            <a href="{% url 'toggle_all_monitors' domain.id 'off' %}" class="btn btn-sm btn-secondary">关</a>
+                        <td>
                             <a href="{% url 'domain_form' domain.id %}" class="btn btn-sm btn-info"><i class="fas fa-edit"></i> 编辑</a>
                             <a href="{% url 'delete_domain' domain.id %}" class="btn btn-sm btn-danger" onclick="return confirm('确定删除此域名？');"><i class="fas fa-trash"></i> 删除</a>
                         </td>
@@ -154,6 +152,15 @@
                 <button type="button" class="btn btn-primary" id="bulk-action-confirm-btn">确定</button>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- 添加确认按钮 -->
+<div class="form-group row mt-3">
+    <div class="col-sm-2"></div>
+    <div class="col-sm-10">
+        <a href="{% url 'domain_list' %}" class="btn btn-secondary mr-2"><i class="fas fa-times mr-2"></i>取消</a>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-2"></i>保存</button>
     </div>
 </div>
 
