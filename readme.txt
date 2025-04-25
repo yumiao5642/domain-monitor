@@ -29,3 +29,4 @@
 ├── manage.py                             # Django 管理脚本，用于运行服务器、迁移数据库等
 ├── staticfiles/                          # 收集的静态文件目录（由 collectstatic 生成）
 └── venv/                                 # Python 虚拟环境目录，包含 Python 3.9.21 环境
+##
