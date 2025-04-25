@@ -10,14 +10,14 @@ from .models import Domain
 from .utils import get_domain_stats, format_interval
 from datetime import datetime
 
-@login_required
+@login_required 
 def dashboard(request):
     domains = Domain.objects.filter(user=request.user)
     stats = {
         'total_domains': domains.count(),
-        'active_domains': domains.filter(check_domain=True).count(),
-        'expiring_soon': domains.filter(check_domain=True).count(),  # Placeholder
-        'alerts': 0  # Placeholder
+        'active_domains': domains.filter(is_active=True).count(), # 改用 is_active 字段
+        'expiring_soon': domains.filter(is_active=True).count(),  # 同样使用 is_active
+        'alerts': 0  # 占位符
     }
     return render(request, 'dashboard.html', {'stats': stats})
 
