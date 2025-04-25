@@ -36,15 +36,17 @@
                     </div>
                     <!-- 分组 -->
                     <div class="form-group row mb-3">
-                        <label for="group" class="col-sm-2 col-form-label dark:text-gray-800"><i class="fas fa-folder mr-2"></i>分组</label>
-                        <div class="col-sm-10 d-flex align-items-center">
-                            <select class="form-control mr-2" id="group" name="group" style="width: 100%; max-width: 200px;">
-                                <option value="默认组" {% if domain.group == '默认组' %}selected{% endif %}>默认组</option>
+                        <label for="group" class="col-sm-2 col-form-label dark:text-gray-800">
+                            <i class="fas fa-folder mr-2"></i>分组
+                        </label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="group" name="group" list="group-list" value="{{ domain.group|default:'默认组' }}" style="width: auto;">
+                            <datalist id="group-list">
+                                <option value="默认组">
                                 {% for group_name in groups %}
-                                <option value="{{ group_name }}" {% if group_name == domain.group %}selected{% endif %}>{{ group_name }}</option>
+                                <option value="{{ group_name }}">
                                 {% endfor %}
-                            </select>
-                            <button type="button" class="btn btn-primary ml-2" id="create_group_btn" data-toggle="modal" data-target="#createGroupModal"><i class="fas fa-plus mr-2"></i>新建</button>
+                            </datalist>
                         </div>
                     </div>
                     <!-- 监控设置 -->
@@ -125,7 +127,9 @@
                     </div>
                     <!-- 长期监控 -->
                     <div class="form-group row mb-3">
-                        <label for="long_term_monitor" class="col-sm-2 col-form-label dark:text-gray-800"><i class="fas fa-toggle-on mr-2"></i>长期监控</label>
+                        <label for="long_term_monitor" class="col-sm-2 col-form-label dark:text-gray-800">
+                            <i class="fas fa-toggle-on mr-2"></i>长期监控
+                        </label>
                         <div class="col-sm-10 d-flex align-items-center flex-wrap">
                             <div class="custom-control custom-checkbox mr-3">
                                 <input type="checkbox" class="custom-control-input" id="long_term_monitor" name="long_term_monitor" {% if domain.long_term_monitor|default:True %}checked{% endif %}>
@@ -266,6 +270,42 @@ $(document).ready(function() {
     // 初始化结束时间 Flatpickr
     $("#end_time").flatpickr({
         dateFormat: "Y-m-d",
+        enableTime: false,
+        defaultHour: 0,
+        defaultMinute: 0,
+        defaultSecond: 0,
+        locale: "zh"
+    });
+
+    // 监控类型自动选择
+    $('#domain_name').on('input', function() {
+        var domain = $(this).val().toLowerCase();
+        var monitorType = $('#monitor_type');
+        
+        if (domain.startsWith('https://')) {
+            monitorType.val('https');
+        } else if (domain.startsWith('http://')) {
+            monitorType.val('http');
+        } else {
+            monitorType.val('https'); // 默认使用 https
+        }
+    });
+
+    // 长期监控切换
+    $('#long_term_monitor').change(function() {
+        if ($(this).is(':checked')) {
+            $('#end_time').hide();
+            $('#end_time_label').hide();
+        } else {
+            $('#end_time').show();
+            $('#end_time_label').show();
+        }
+    });
+
+    // 初始化结束时间选择器
+    $("#end_time").flatpickr({
+        dateFormat: "Y-m-d",
+        minDate: "today", // 只能选择今天及以后的日期
         enableTime: false,
         defaultHour: 0,
         defaultMinute: 0,
