@@ -1,5 +1,5 @@
 Django==3.2.25
-mysqlclient==2.2.4
+mysqlclient>=2.2.0  # 放宽版本要求
 pyotp==2.9.0
 qrcode==7.4.2
 Pillow==10.4.0
