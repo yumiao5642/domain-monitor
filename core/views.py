@@ -8,7 +8,8 @@ from django.urls import reverse
 from django.core.paginator import Paginator
 from .models import Domain
 from .utils import get_domain_stats, format_interval
-from datetime import datetime
+from datetime import datetime, timedelta
+from .utils import check_domain_status
 
 @login_required 
 def dashboard(request):
@@ -67,87 +68,99 @@ def domain_list(request):
 def domain_form(request, domain_id=None):
     domain = None
     if domain_id:
-        domain = Domain.objects.get(id=domain_id, user=request.user)
+        try:
+            domain = Domain.objects.get(id=domain_id, user=request.user)
+        except Domain.DoesNotExist:
+            messages.error(request, '监控对象不存在！')
+            return redirect('domain_list')
 
     if request.method == 'POST':
         try:
-            domain_input = request.POST.get('domain_name')
-            domain_names = [name.strip() for name in domain_input.split('\n') if name.strip()] if '\n' in domain_input else [domain_input.strip()]
-            task_name = request.POST.get('task_name')
-            check_interval = int(request.POST.get('check_interval'))
-            check_domain = 'check_domain' in request.POST
-            check_cert = 'check_cert' in request.POST
-            check_https = 'check_https' in request.POST
-            group = request.POST.get('group', '默认组')
-            response_time_threshold = int(request.POST.get('response_time_threshold', 1000))
-            alert_threshold = int(request.POST.get('alert_threshold', 3))
-            notify_telegram = 'notify_telegram' in request.POST
-            notify_email = 'notify_email' in request.POST
-            notify_inbox = 'notify_inbox' in request.POST
-            long_term_monitor = 'long_term_monitor' in request.POST
-            end_time = request.POST.get('end_time') or None
-            if end_time and end_time.strip() and end_time != '00:00:00':
-                try:
-                    end_time = datetime.strptime(end_time, '%Y-%m-%d').date()
-                except ValueError:
-                    end_time = None
-            else:
-                end_time = None
+            # 获取基本数据
+            task_name = request.POST.get('task_name', '').strip()
+            domain_input = request.POST.get('domain_name', '').strip()
+            domain_names = [name.strip() for name in domain_input.split('\n') if name.strip()]
+            check_interval = int(request.POST.get('check_interval', 3600))
+            group = request.POST.get('group', '默认组').strip()
 
-            # 检查域名是否已存在（仅在添加新域名时检查）
-            if not domain_id:
-                existing_domains = Domain.objects.filter(user=request.user, domain_name__in=domain_names)
-                if existing_domains.exists():
-                    messages.error(request, '该监控对象已添加！')
-                    groups = Domain.objects.filter(user=request.user).values_list('group', flat=True).distinct()
-                    return render(request, 'domain_form.html', {
-                        'domain': domain,
-                        'groups': groups,
-                        'error': '该监控对象已添加！'
-                    })
+            # 验证数据
+            if not task_name:
+                raise ValueError('任务名称不能为空！')
+            if not domain_names:
+                raise ValueError('监控对象不能为空！')
+            if check_interval < 300:
+                raise ValueError('检测频率不能小于300秒！')
 
+            # 构建保存数据
+            data = {
+                'task_name': task_name,
+                'check_interval': check_interval,
+                'group': group,
+                'response_time_threshold': int(request.POST.get('response_time_threshold', 1000)),
+                'alert_threshold': int(request.POST.get('alert_threshold', 3)),
+                'notify_telegram': 'notify_telegram' in request.POST,
+                'notify_email': 'notify_email' in request.POST,
+                'notify_inbox': 'notify_inbox' in request.POST,
+                'long_term_monitor': 'long_term_monitor' in request.POST,
+            }
+
+            # 处理结束时间
+            if not data['long_term_monitor']:
+                end_time = request.POST.get('end_time')
+                if end_time:
+                    try:
+                        data['end_time'] = datetime.strptime(end_time, '%Y-%m-%d').date()
+                    except ValueError:
+                        raise ValueError('无效的结束时间格式！')
+
+            # 检查域名重复
+            if not domain_id and Domain.objects.filter(user=request.user, domain_name__in=domain_names).exists():
+                raise ValueError('监控对象已存在！')
+
+            # 保存数据
             if domain:
+                # 更新现有记录
                 domain.domain_name = domain_names[0]
-                domain.task_name = task_name
-                domain.check_interval = check_interval
-                domain.check_domain = check_domain
-                domain.check_cert = check_cert
-                domain.check_https = check_https
-                domain.group = group
-                domain.response_time_threshold = response_time_threshold
-                domain.alert_threshold = alert_threshold
-                domain.notify_telegram = notify_telegram
-                domain.notify_email = notify_email
-                domain.notify_inbox = notify_inbox
-                domain.long_term_monitor = long_term_monitor
-                domain.end_time = end_time
+                for key, value in data.items():
+                    setattr(domain, key, value)
                 domain.save()
+                messages.success(request, '更新成功！')
             else:
+                # 创建新记录
                 for domain_name in domain_names:
+                    # 自动判断监控类型
+                    if domain_name.startswith('https://'):
+                        monitor_type = 'https'
+                        domain_name = domain_name.replace('https://', '')
+                    elif domain_name.startswith('http://'):
+                        monitor_type = 'http'
+                        domain_name = domain_name.replace('http://', '')
+                    else:
+                        monitor_type = 'https'  # 默认使用 https
+                    
                     Domain.objects.create(
                         user=request.user,
                         domain_name=domain_name,
-                        task_name=task_name,
-                        check_interval=check_interval,
-                        check_domain=check_domain,
-                        check_cert=check_cert,
-                        check_https=check_https,
-                        group=group,
-                        response_time_threshold=response_time_threshold,
-                        alert_threshold=alert_threshold,
-                        notify_telegram=notify_telegram,
-                        notify_email=notify_email,
-                        notify_inbox=notify_inbox,
-                        long_term_monitor=long_term_monitor,
-                        end_time=end_time,
-                        next_check=timezone.now()
+                        monitor_type=monitor_type,
+                        request_method='GET',  # 默认使用 GET
+                        next_check=timezone.now(),
+                        **data
                     )
-            return redirect('domain_list')
-        except Exception as e:
-            messages.error(request, f'错误：{str(e)}')
+                messages.success(request, f'成功添加 {len(domain_names)} 个监控对象！')
 
+            return redirect('domain_list')
+
+        except ValueError as e:
+            messages.error(request, str(e))
+        except Exception as e:
+            messages.error(request, f'保存失败：{str(e)}')
+
+    # 获取当前用户的所有分组
     groups = Domain.objects.filter(user=request.user).values_list('group', flat=True).distinct()
-    return render(request, 'domain_form.html', {'domain': domain, 'groups': groups})
+    return render(request, 'domain_form.html', {
+        'domain': domain,
+        'groups': groups
+    })
 
 @login_required
 def toggle_monitor(request, domain_id, monitor_type):
@@ -196,6 +209,31 @@ def bulk_action(request):
             domains.delete()
 
         return redirect('domain_list')
+    return redirect('domain_list')
+
+@login_required
+def update_domains(request):
+    """更新需要检测的域名"""
+    try:
+        # 获取需要检测的域名
+        now = timezone.now()
+        domains = Domain.objects.filter(
+            models.Q(next_check__isnull=True) |  # 从未检测过
+            models.Q(next_check__lte=now)        # 已到检测时间
+        )
+        
+        updated_count = 0
+        for domain in domains:
+            if check_domain_status(domain, request.user):
+                # 更新下次检测时间
+                domain.next_check = now + timedelta(seconds=domain.check_interval)
+                domain.save()
+                updated_count += 1
+        
+        messages.success(request, f'成功更新 {updated_count} 个域名')
+    except Exception as e:
+        messages.error(request, f'更新失败：{str(e)}')
+    
     return redirect('domain_list')
 
 def user_login(request):

@@ -1,4 +1,7 @@
-from datetime import timedelta
+import requests
+from datetime import datetime, timedelta
+import time
+from .models import MonitorRecord, CheckLog
 
 def get_domain_stats(domain):
     """
@@ -35,3 +38,57 @@ def format_interval(seconds):
     if seconds:
         parts.append(f"{seconds}秒")
     return " ".join(parts) if parts else "0秒"
+
+def check_domain_status(domain, user):
+    """检测域名状态"""
+    url = f"{domain.monitor_type}://{domain.domain_name}"
+    start_time = time.time()
+    dns_start = time.time()
+    
+    try:
+        # 发送请求
+        response = requests.get(url, timeout=10)
+        end_time = time.time()
+        
+        # 计算时间
+        total_time = end_time - start_time
+        dns_time = end_time - dns_start
+        
+        # 记录检测结果
+        record = MonitorRecord.objects.create(
+            domain=domain,
+            status=str(response.status_code),
+            total_time=total_time,
+            dns_time=dns_time,
+            details=f"HTTP {response.status_code}"
+        )
+        
+        # 记录操作日志
+        CheckLog.objects.create(
+            domain=domain,
+            status='成功',
+            operator=user,
+            details=f"成功检测域名 {domain.domain_name}"
+        )
+        
+        return True
+        
+    except Exception as e:
+        # 记录失败结果
+        MonitorRecord.objects.create(
+            domain=domain,
+            status='失败',
+            total_time=time.time() - start_time,
+            dns_time=time.time() - dns_start,
+            details=str(e)
+        )
+        
+        # 记录操作日志
+        CheckLog.objects.create(
+            domain=domain,
+            status='失败',
+            operator=user,
+            details=f"检测失败: {str(e)}"
+        )
+        
+        return False

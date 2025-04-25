@@ -1,6 +1,7 @@
 Django==3.2.25
-mysqlclient>=2.2.0  # 放宽版本要求
+mysqlclient>=2.2.0
 pyotp==2.9.0
 qrcode==7.4.2
 Pillow==10.4.0
 gunicorn==22.0.0
+requests==2.31.0  # 添加 requests 依赖

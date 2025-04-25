@@ -14,4 +14,5 @@ urlpatterns = [
     path('login/', views.user_login, name='login'),
     path('logout/', views.user_logout, name='logout'),
     path('mfa-setup/', views.user_login, name='mfa_setup'),  # Placeholder
+    path('update-domains/', views.update_domains, name='update_domains'),
 ]

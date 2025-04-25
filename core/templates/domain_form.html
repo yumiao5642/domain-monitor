@@ -3,6 +3,21 @@
 {% block title %}{% if domain %}编辑域名{% else %}添加域名{% endif %} - 域名监控系统{% endblock %}
 {% block nav_title %}{% if domain %}编辑域名{% else %}添加域名{% endif %}{% endblock %}
 {% block content %}
+<!-- 在页面顶部添加消息提示区域 -->
+<div class="card">
+    <div class="card-body">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
 <div class="card">
     <div class="card-body">
         {% if error %}

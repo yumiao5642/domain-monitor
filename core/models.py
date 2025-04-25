@@ -18,7 +18,6 @@ class User(AbstractUser):
     )
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='user', verbose_name='角色')
     mfa_secret = models.CharField(max_length=100, blank=True, null=True, verbose_name='MFA密钥')
-    mfa_enabled = models.BooleanField(default=False, verbose_name='是否启用MFA')
 
     class Meta:
         db_table = 'user'
@@ -43,7 +42,7 @@ class Domain(models.Model):
     notify_inbox = models.BooleanField(default=False, verbose_name='站内信通知')
     long_term_monitor = models.BooleanField(default=True, verbose_name='长期监控')
     end_time = models.DateField(null=True, blank=True, verbose_name='任务结束时间')
-    monitor_type = models.CharField(max_length=10, default='http', choices=[('http', 'HTTP'), ('https', 'HTTPS')], verbose_name='监控类型')
+    monitor_type = models.CharField(max_length=10, default='https', choices=[('http', 'HTTP'), ('https', 'HTTPS')], verbose_name='监控类型')
     request_method = models.CharField(max_length=10, default='GET', choices=[('GET', 'GET'), ('POST', 'POST')], verbose_name='请求方式')
 
     class Meta:
@@ -87,18 +86,33 @@ class CertExpiryResult(models.Model):
         verbose_name = '证书到期检测结果'
         verbose_name_plural = '证书到期检测结果'
 
-# 监控结果表（网站状态）
-class WebsiteMonitorResult(models.Model):
-    domain = models.ForeignKey(Domain, on_delete=models.CASCADE, verbose_name='关联域名')
-    check_time = models.DateTimeField(default=timezone.now, verbose_name='检测时间')
-    status_code = models.IntegerField(verbose_name='HTTP状态码')
-    response_time = models.FloatField(verbose_name='响应时间（秒）')
-    details = models.TextField(verbose_name='检测详情')
+# 修改 WebsiteMonitorResult 类名和表名
+class MonitorRecord(models.Model):
+    domain = models.ForeignKey(Domain, on_delete=models.CASCADE, verbose_name='监控对象')
+    check_time = models.DateTimeField(auto_now_add=True, verbose_name='检测时间')
+    status = models.CharField(max_length=50, default='', verbose_name='访问状态')
+    total_time = models.FloatField(null=True, verbose_name='总时间(秒)')
+    dns_time = models.FloatField(null=True, verbose_name='解析时间(秒)')
+    details = models.TextField(blank=True, verbose_name='详细信息')
+    update_time = models.DateTimeField(auto_now=True, verbose_name='更新时间')
 
     class Meta:
-        db_table = 'monitor_logs'  # 将 'website_monitor_result' 改为 'monitor_logs'
-        verbose_name = '监控日志'
-        verbose_name_plural = '监控日志'
+        db_table = 'monitor_records'
+        verbose_name = '监控记录'
+        verbose_name_plural = '监控记录'
+
+# 添加操作日志模型
+class CheckLog(models.Model):
+    domain = models.ForeignKey(Domain, on_delete=models.CASCADE, verbose_name='监控对象')
+    check_time = models.DateTimeField(auto_now_add=True, verbose_name='检测时间')
+    status = models.CharField(max_length=50, verbose_name='检测状态')
+    operator = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='操作人')
+    details = models.TextField(blank=True, verbose_name='详细信息')
+
+    class Meta:
+        db_table = 'check_log'
+        verbose_name = '检测日志'
+        verbose_name_plural = '检测日志'
 
 # 告警配置表
 class AlertConfig(models.Model):
